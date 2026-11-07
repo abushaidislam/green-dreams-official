@@ -79,7 +79,7 @@ export async function getStoreProducts(params?: {
       headers: {
         'x-publishable-api-key': PUBLISHABLE_KEY,
       },
-      next: { revalidate: 60 },
+      next: { revalidate: process.env.NODE_ENV === 'development' ? 0 : 15 },
     })
 
     if (!res.ok) {
