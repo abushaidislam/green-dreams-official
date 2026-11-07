@@ -1,11 +1,12 @@
 import React from 'react'
 import Link from 'next/link'
-import { Sprout, Phone, Mail, MapPin, MessageCircle, ShieldCheck, Truck } from 'lucide-react'
+import { Sprout, Phone, Mail, MapPin, MessageCircle, ShieldCheck, Truck, RefreshCw } from 'lucide-react'
 import { getWhatsAppSupportLink } from '@/lib/utils'
+import { NURSERY_CONTACT, DELIVERY_ZONES } from '@/lib/bangladesh-data'
 
 export function Footer() {
   const whatsAppLink = getWhatsAppSupportLink(
-    '8801700000000',
+    NURSERY_CONTACT.phoneRaw,
     'Hello Green Dreams, I need help with plant care advice or my delivery status.'
   )
 
@@ -64,21 +65,32 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Delivery & Trust */}
+          {/* Policies & Assurance */}
           <div>
-            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">ডেলিভারি ও নিশ্চয়তা</h4>
-            <ul className="space-y-3 text-sm text-botanical-300">
-              <li className="flex items-start gap-2">
-                <Truck className="w-4 h-4 text-botanical-400 mt-0.5 flex-shrink-0" />
-                <span>ঢাকা শহরের ভেতরে ৬০ টাকা (২-৩ দিন)</span>
+            <h4 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">পলিসি ও নিশ্চয়তা</h4>
+            <ul className="space-y-2.5 text-sm text-botanical-300">
+              <li>
+                <Link href="/policies/shipping-and-delivery" className="hover:text-white transition flex items-center gap-1.5">
+                  <Truck className="w-3.5 h-3.5 text-botanical-400" />
+                  <span>শিপিং ও ডেলিভারি পলিসি (৳৬০ / ৳১৩০)</span>
+                </Link>
               </li>
-              <li className="flex items-start gap-2">
-                <Truck className="w-4 h-4 text-botanical-400 mt-0.5 flex-shrink-0" />
-                <span>ঢাকার বাইরে ১৩০ টাকা (৩-৫ দিন)</span>
+              <li>
+                <Link href="/policies/live-plant-replacement" className="hover:text-white transition flex items-center gap-1.5">
+                  <RefreshCw className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>২৪ ঘণ্টা লাইভ প্ল্যান্ট রিপ্লেসমেন্ট</span>
+                </Link>
               </li>
-              <li className="flex items-start gap-2">
-                <ShieldCheck className="w-4 h-4 text-botanical-400 mt-0.5 flex-shrink-0" />
-                <span>ক্যাশ অন ডেলিভারি (হাতে পেয়ে মূল্য পরিশোধ)</span>
+              <li>
+                <Link href="/policies/cod-terms" className="hover:text-white transition flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
+                  <span>ক্যাশ অন ডেলিভারি (COD) নির্দেশিকা</span>
+                </Link>
+              </li>
+              <li>
+                <Link href="/policies/terms-and-care-disclaimer" className="hover:text-white transition flex items-center gap-1.5">
+                  <span>বোটানিক্যাল কেয়ার ডিসক্লেইমার</span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -89,15 +101,15 @@ export function Footer() {
             <div className="space-y-3 text-sm text-botanical-300">
               <p className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-botanical-400 mt-0.5 flex-shrink-0" />
-                <span>মিরপুর বোটানিক্যাল নার্সারি হাব, ঢাকা ১২১৬</span>
+                <span>{NURSERY_CONTACT.addressBn}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-botanical-400 flex-shrink-0" />
-                <span>+৮৮০ ১৭০০০০০০০০</span>
+                <span>{NURSERY_CONTACT.phoneDisplay}</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-botanical-400 flex-shrink-0" />
-                <span>support@greendreams.com</span>
+                <span>{NURSERY_CONTACT.email}</span>
               </p>
             </div>
           </div>
@@ -106,13 +118,16 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-botanical-800/80 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-botanical-400 gap-4">
           <p>© {new Date().getFullYear()} Green Dreams. All rights reserved. Dhaka, Bangladesh.</p>
-          <div className="flex items-center space-x-6">
-            <span>ক্যাশ অন ডেলিভারি নিশ্চিত</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/policies/shipping-and-delivery" className="hover:text-white transition">ডেলিভারি পলিসি</Link>
             <span>•</span>
-            <span>১০০% সতেজ গাছ গ্যারান্টি</span>
+            <Link href="/policies/live-plant-replacement" className="hover:text-white transition">রিপ্লেসমেন্ট গ্যারান্টি</Link>
+            <span>•</span>
+            <Link href="/policies/cod-terms" className="hover:text-white transition">COD শর্তাবলী</Link>
           </div>
         </div>
       </div>
     </footer>
   )
 }
+

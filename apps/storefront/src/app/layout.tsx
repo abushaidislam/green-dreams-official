@@ -4,6 +4,7 @@ import { CartProvider } from '@/context/CartContext'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { CartDrawer } from '@/components/CartDrawer'
+import { FloatingWhatsApp } from '@/components/FloatingWhatsApp'
 
 export const metadata: Metadata = {
   title: 'Green Dreams — বাংলাদেশের প্রিমিয়াম অনলাইন প্ল্যান্ট শপ',
@@ -22,6 +23,7 @@ export default function RootLayout({
         <CartProvider>
           <Header />
           <CartDrawer />
+          <FloatingWhatsApp />
           <div className="flex-1 flex flex-col">{children}</div>
           <Footer />
         </CartProvider>

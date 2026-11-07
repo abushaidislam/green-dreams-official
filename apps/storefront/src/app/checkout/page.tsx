@@ -13,31 +13,46 @@ import {
   ShoppingBag,
   ArrowLeft,
   Loader2,
+  Clock,
+  PackageCheck,
+  PhoneCall,
+  Info,
 } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
-import { formatBDT, validateAndNormalizeBDPhone } from '@/lib/utils'
+import { formatBDT } from '@/lib/utils'
+import {
+  validateBDPhoneDetailed,
+  validateBDAddress,
+  DHAKA_CITY_AREAS,
+  ALL_BANGLADESH_DISTRICTS,
+  DELIVERY_ZONES,
+  NURSERY_CONTACT,
+} from '@/lib/bangladesh-data'
 import { BACKEND_URL, PUBLISHABLE_KEY } from '@/lib/medusa'
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { cart, refreshCart, clearCart } = useCart()
+  const { cart, clearCart } = useCart()
 
   // Form State
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
+  const [detectedOperator, setDetectedOperator] = useState<string | null>(null)
   const [email, setEmail] = useState('')
   const [address1, setAddress1] = useState('')
-  const [city, setCity] = useState('Dhaka')
   const [deliveryZone, setDeliveryZone] = useState<'inside_dhaka' | 'outside_dhaka'>('inside_dhaka')
+  const [dhakaArea, setDhakaArea] = useState<string>('Mirpur (মিরপুর)')
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('Gazipur')
   const [deliveryNotes, setDeliveryNotes] = useState('')
+  const [phoneConsent, setPhoneConsent] = useState(true)
 
   // UI & Loading States
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false)
   const [phoneError, setPhoneError] = useState<string | null>(null)
+  const [addressWarning, setAddressWarning] = useState<string | null>(null)
   const [formError, setFormError] = useState<string | null>(null)
-  const [shippingFee, setShippingFee] = useState<number>(60)
+  const [shippingFee, setShippingFee] = useState<number>(DELIVERY_ZONES.INSIDE_DHAKA.fee)
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -51,11 +66,9 @@ export default function CheckoutPage() {
   // Update shipping fee when delivery zone changes
   useEffect(() => {
     if (deliveryZone === 'inside_dhaka') {
-      setShippingFee(60)
-      if (city !== 'Dhaka') setCity('Dhaka')
+      setShippingFee(DELIVERY_ZONES.INSIDE_DHAKA.fee)
     } else {
-      setShippingFee(130)
-      if (city === 'Dhaka') setCity('')
+      setShippingFee(DELIVERY_ZONES.OUTSIDE_DHAKA.fee)
     }
   }, [deliveryZone])
 
@@ -63,31 +76,55 @@ export default function CheckoutPage() {
     const val = e.target.value
     setPhone(val)
     if (phoneError) setPhoneError(null)
+
+    // Detect operator in real-time
+    const validation = validateBDPhoneDetailed(val)
+    if (validation.operator) {
+      setDetectedOperator(validation.operator)
+    } else {
+      setDetectedOperator(null)
+    }
+  }
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value
+    setAddress1(val)
+
+    const check = validateBDAddress(val, deliveryZone === 'inside_dhaka' ? 'Dhaka' : selectedDistrict)
+    if (check.warning) {
+      setAddressWarning(check.warning)
+    } else {
+      setAddressWarning(null)
+    }
   }
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault()
     setFormError(null)
 
-    // Validation
+    // Name Validation
     if (!firstName.trim()) {
       setFormError('দয়া করে আপনার নাম প্রদান করুন')
       return
     }
 
-    const phoneValidation = validateAndNormalizeBDPhone(phone)
+    // Phone Validation (Hardened Bangladesh rules)
+    const phoneValidation = validateBDPhoneDetailed(phone)
     if (!phoneValidation.isValid) {
-      setPhoneError(phoneValidation.error || 'সঠিক ফোন নম্বর দিন')
+      setPhoneError(phoneValidation.error || 'সঠিক বাংলাদেশি ফোন নম্বর দিন')
       return
     }
 
-    if (!address1.trim()) {
-      setFormError('ডেলিভারির সম্পূর্ণ ঠিকানা প্রদান করুন (রোড, বাড়ি, এলাকা)')
+    // Address Validation
+    const effectiveCity = deliveryZone === 'inside_dhaka' ? 'Dhaka' : selectedDistrict
+    const addrValidation = validateBDAddress(address1, effectiveCity)
+    if (!addrValidation.isValid) {
+      setFormError(addrValidation.error || 'সঠিক সম্পূর্ণ ঠিকানা দিন')
       return
     }
 
-    if (!city.trim()) {
-      setFormError('জেলা বা শহরের নাম প্রদান করুন')
+    if (!phoneConsent) {
+      setFormError('ডেলিভারির পূর্বে ফোন ভেরিফিকেশনের শর্তটিতে সম্মত হতে হবে।')
       return
     }
 
@@ -99,12 +136,15 @@ export default function CheckoutPage() {
     try {
       setIsSubmitting(true)
 
+      const fullArea = deliveryZone === 'inside_dhaka' ? dhakaArea : selectedDistrict
+      const formattedAddress = `${address1.trim()} [এলাকা/জেলা: ${fullArea}]` + (deliveryNotes ? ` (নোট: ${deliveryNotes.trim()})` : '')
+
       // Step 1: Update customer and delivery address on cart
       const addressPayload = {
         first_name: firstName.trim(),
         last_name: lastName.trim() || 'Customer',
-        address_1: address1.trim() + (deliveryNotes ? ` (নোট: ${deliveryNotes.trim()})` : ''),
-        city: city.trim(),
+        address_1: formattedAddress,
+        city: effectiveCity,
         country_code: 'bd',
         postal_code: deliveryZone === 'inside_dhaka' ? '1200' : '1000',
         phone: phoneValidation.normalized,
@@ -136,8 +176,8 @@ export default function CheckoutPage() {
       const targetOption =
         availableOptions.find((opt) =>
           deliveryZone === 'inside_dhaka'
-            ? opt.name.includes('Inside Dhaka') || opt.amount === 60
-            : opt.name.includes('Outside Dhaka') || opt.amount === 130
+            ? opt.name.includes('Inside Dhaka') || opt.amount === DELIVERY_ZONES.INSIDE_DHAKA.fee
+            : opt.name.includes('Outside Dhaka') || opt.amount === DELIVERY_ZONES.OUTSIDE_DHAKA.fee
         ) || availableOptions[0]
 
       if (!targetOption) {
@@ -248,8 +288,8 @@ export default function CheckoutPage() {
           <ArrowLeft className="w-4 h-4" />
           <span>কার্টে ফিরে যান</span>
         </Link>
-        <span className="text-xs font-semibold text-botanical-600">
-          নিরাপদ ক্যাশ অন ডেলিভারি চেকআউট
+        <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+          ✓ ক্যাশ অন ডেলিভারি নিশ্চিত
         </span>
       </div>
 
@@ -270,8 +310,9 @@ export default function CheckoutPage() {
 
           {/* Section 1: Customer Contact */}
           <div className="bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-5 shadow-xs">
-            <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3">
-              ১. আপনার যোগাযোগের তথ্য
+            <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3 flex items-center justify-between">
+              <span>১. আপনার যোগাযোগের তথ্য</span>
+              <span className="text-xs font-normal text-warm-500">* চিহ্নিত ঘরগুলো আবশ্যক</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -304,15 +345,22 @@ export default function CheckoutPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-botanical-800 mb-1.5">
-                বাংলাদেশি মোবাইল নম্বর *
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-botanical-800">
+                  বাংলাদেশি মোবাইল নম্বর *
+                </label>
+                {detectedOperator && (
+                  <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md">
+                    {detectedOperator} Network
+                  </span>
+                )}
+              </div>
               <input
                 type="tel"
                 required
                 value={phone}
                 onChange={handlePhoneChange}
-                placeholder="017XXXXXXXX"
+                placeholder="017XXXXXXXX বা 018XXXXXXXX"
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 ${
                   phoneError
                     ? 'border-rose-400 focus:ring-rose-500 bg-rose-50/50'
@@ -320,10 +368,13 @@ export default function CheckoutPage() {
                 }`}
               />
               {phoneError ? (
-                <p className="text-xs text-rose-600 mt-1">{phoneError}</p>
+                <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  <span>{phoneError}</span>
+                </p>
               ) : (
                 <p className="text-[11px] text-warm-500 mt-1">
-                  ডেলিভারির সময় এই নম্বরে কল করে নিশ্চিত করা হবে।
+                  ডেলিভারির পূর্বে এই নম্বরে কল করে নিশ্চিত করা হবে। (GP, Banglalink, Robi, Airtel, Teletalk)
                 </p>
               )}
             </div>
@@ -345,13 +396,13 @@ export default function CheckoutPage() {
           {/* Section 2: Delivery Zone & Address */}
           <div className="bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-5 shadow-xs">
             <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3">
-              ২. ডেলিভারি এলাকা ও ঠিকানা
+              ২. ডেলিভারি এলাকা ও সঠিক ঠিকানা
             </h2>
 
-            {/* Delivery Zone Selection */}
+            {/* Delivery Zone Selection Cards */}
             <div>
               <label className="block text-xs font-bold text-botanical-800 mb-2">
-                ডেলিভারি এলাকা নির্বাচন করুন *
+                ডেলিভারি জোন নির্বাচন করুন *
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
@@ -369,7 +420,10 @@ export default function CheckoutPage() {
                       ঢাকা শহরের ভেতরে
                     </span>
                     <span className="text-xs text-botanical-700 block mt-0.5">
-                      ডেলিভারি চার্জ: <strong>৳৬০</strong> (২-৩ দিন)
+                      চার্জ: <strong>৳{DELIVERY_ZONES.INSIDE_DHAKA.fee}</strong> | সময়: {DELIVERY_ZONES.INSIDE_DHAKA.etaDays}
+                    </span>
+                    <span className="text-[11px] text-warm-500 block mt-1">
+                      {DELIVERY_ZONES.INSIDE_DHAKA.packagingBn}
                     </span>
                   </div>
                 </button>
@@ -389,151 +443,233 @@ export default function CheckoutPage() {
                       ঢাকার বাইরে (সারা দেশ)
                     </span>
                     <span className="text-xs text-botanical-700 block mt-0.5">
-                      ডেলিভারি চার্জ: <strong>৳১৩০</strong> (৩-৫ দিন)
+                      চার্জ: <strong>৳{DELIVERY_ZONES.OUTSIDE_DHAKA.fee}</strong> | সময়: {DELIVERY_ZONES.OUTSIDE_DHAKA.etaDays}
+                    </span>
+                    <span className="text-[11px] text-warm-500 block mt-1">
+                      {DELIVERY_ZONES.OUTSIDE_DHAKA.packagingBn}
                     </span>
                   </div>
                 </button>
               </div>
             </div>
 
+            {/* Area or District Selector */}
+            {deliveryZone === 'inside_dhaka' ? (
+              <div>
+                <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+                  ঢাকা শহরের নির্দিষ্ট এলাকা নির্বাচন করুন *
+                </label>
+                <select
+                  value={dhakaArea}
+                  onChange={(e) => setDhakaArea(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm bg-white"
+                >
+                  {DHAKA_CITY_AREAS.map((area) => (
+                    <option key={area} value={area}>
+                      {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <div>
+                <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+                  জেলা নির্বাচন করুন (৬৪ জেলা) *
+                </label>
+                <select
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm bg-white"
+                >
+                  {ALL_BANGLADESH_DISTRICTS.map((dist) => (
+                    <option key={dist} value={dist}>
+                      {dist} জেলা
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Detailed Street Address */}
             <div>
               <label className="block text-xs font-bold text-botanical-800 mb-1.5">
-                সম্পূর্ণ ঠিকানা (বাসা/ফ্ল্যাট নং, রোড নং, এলাকা/থানা) *
+                সম্পূর্ণ ঠিকানা (বাসা/ফ্ল্যাট নং, রোড নং, ল্যান্ডমার্ক) *
               </label>
               <textarea
                 required
                 rows={2}
                 value={address1}
-                onChange={(e) => setAddress1(e.target.value)}
-                placeholder="উদাঃ বাড়ি ১২, রোড ৪, ব্লক সি, বনশ্রী, ঢাকা"
+                onChange={handleAddressChange}
+                placeholder={
+                  deliveryZone === 'inside_dhaka'
+                    ? 'উদাঃ বাড়ি ১২, রোড ৪, ব্লক সি, বনশ্রী, রামপুরা জামে মসজিদের পাশে'
+                    : 'উদাঃ হোল্ডিং ৪৫, কলেজ রোড, সদর থানা, কুরিয়ার পয়েন্টের পাশে'
+                }
                 className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm"
               />
+              {addressWarning && (
+                <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1.5 flex items-start gap-1.5">
+                  <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-amber-600" />
+                  <span>{addressWarning}</span>
+                </p>
+              )}
             </div>
 
+            {/* Special Plant Delivery Notes */}
             <div>
               <label className="block text-xs font-bold text-botanical-800 mb-1.5">
-                জেলা / শহর *
-              </label>
-              <input
-                type="text"
-                required
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder={deliveryZone === 'inside_dhaka' ? 'Dhaka' : 'উদাঃ চট্টগ্রাম, সিলেট, রাজশাহী'}
-                className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-botanical-800 mb-1.5">
-                ডেলিভারি নোট বা বিশেষ নির্দেশিকা (ঐচ্ছিক)
+                বিশেষ ডেলিভারি নোট (ঐচ্ছিক)
               </label>
               <input
                 type="text"
                 value={deliveryNotes}
                 onChange={(e) => setDeliveryNotes(e.target.value)}
-                placeholder="উদাঃ বিকালে ডেলিভারি দিলে ভালো হয়"
+                placeholder="উদাঃ লিফটের সুবিধা নেই/৩য় তলা, বিকেলে ডেলিভারি দিন"
                 className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm"
               />
             </div>
           </div>
 
-          {/* Section 3: Payment Method */}
+          {/* Section 3: COD Payment & Protocol Consent */}
           <div className="bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-4 shadow-xs">
-            <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3">
-              ৩. মূল্য পরিশোধের পদ্ধতি
+            <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3 flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-emerald-700" />
+              <span>৩. মূল্য পরিশোধ পদ্ধতি</span>
             </h2>
 
-            <div className="p-4 rounded-2xl bg-botanical-50 border-2 border-botanical-700 flex items-start gap-3">
-              <ShieldCheck className="w-6 h-6 text-emerald-600 mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-extrabold text-sm text-botanical-950">
+            <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center flex-shrink-0 mt-0.5 text-xs font-bold">
+                ✓
+              </div>
+              <div className="space-y-1">
+                <span className="font-bold text-sm text-emerald-950 block">
                   ক্যাশ অন ডেলিভারি (Cash on Delivery)
-                </h3>
-                <p className="text-xs text-botanical-700 mt-1 leading-relaxed">
-                  গাছ হাতে পেয়ে যাচাই করে মূল্য পরিশোধ করুন। কোনো অগ্রিম পেমেন্টের প্রয়োজন নেই।
+                </span>
+                <p className="text-xs text-emerald-800 leading-relaxed">
+                  পণ্য হাতে পেয়ে পুরোপুরি সন্তুষ্ট হয়ে ডেলিভারি ম্যানকে ক্যাশ পরিশোধ করবেন। কোনো অগ্রিম পেমেন্টের ঝুঁকি নেই।
                 </p>
               </div>
             </div>
+
+            {/* Phone Confirmation Consent Checkbox */}
+            <label className="flex items-start gap-3 p-3.5 rounded-xl bg-warm-50 border border-warm-200 cursor-pointer text-xs text-botanical-900">
+              <input
+                type="checkbox"
+                checked={phoneConsent}
+                onChange={(e) => setPhoneConsent(e.target.checked)}
+                className="mt-0.5 rounded border-warm-300 text-botanical-700 focus:ring-botanical-600"
+              />
+              <span className="leading-relaxed">
+                আমি অবগত আছি যে লাইভ প্ল্যান্টের সুরক্ষার্থে ডেলিভারির পূর্বে নার্সারি থেকে আমাকে ফোনে কল করে ঠিকানা নিশ্চিত করা হবে এবং আমি ফোন রিসিভ করে অর্ডার কনফার্ম করব।
+              </span>
+            </label>
           </div>
         </div>
 
-        {/* Right Column: Order Summary & Place Order */}
-        <div className="lg:col-span-5 bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-6 shadow-xs sticky top-24">
-          <h2 className="text-xl font-extrabold text-botanical-950">আপনার অর্ডার</h2>
+        {/* Right Column: Order Summary & Placement */}
+        <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-24">
+          <div className="bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-6 shadow-sm">
+            <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3">
+              অর্ডারের সংক্ষিপ্ত বিবরণ
+            </h2>
 
-          {/* Cart Items Preview */}
-          <div className="divide-y divide-warm-100 max-h-72 overflow-y-auto pr-1">
-            {items.map((item) => (
-              <div key={item.id} className="py-3 flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 rounded-xl bg-warm-100 overflow-hidden flex-shrink-0 border border-warm-200">
+            {/* Items List */}
+            <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+              {items.map((item) => (
+                <div key={item.id} className="flex items-center gap-3">
+                  <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-warm-100 flex-shrink-0 border border-warm-200">
                     <Image
-                      src={
-                        item.thumbnail ||
-                        'https://images.unsplash.com/photo-1593482892290-f54927ae1bf6?auto=format&fit=crop&w=150&q=80'
-                      }
+                      src={item.thumbnail || 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=200'}
                       alt={item.title}
                       fill
                       className="object-cover"
                     />
                   </div>
-                  <div>
-                    <span className="font-bold text-botanical-900 block line-clamp-1">
-                      {item.variant?.product?.title || item.title}
-                    </span>
-                    <span className="text-warm-500">
-                      পরিমাণ: {item.quantity} {item.variant?.title ? `(${item.variant.title})` : ''}
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-xs text-botanical-950 truncate">{item.title}</h3>
+                    <p className="text-[11px] text-warm-500 truncate">
+                      {item.variant?.title || 'Standard'} × {item.quantity}
+                    </p>
                   </div>
+                  <span className="font-bold text-xs text-botanical-900">
+                    {formatBDT(item.unit_price * item.quantity)}
+                  </span>
                 </div>
-                <span className="font-extrabold text-botanical-950">
-                  {formatBDT(item.unit_price * item.quantity)}
+              ))}
+            </div>
+
+            {/* Calculations */}
+            <div className="space-y-2 border-t border-warm-100 pt-4 text-xs">
+              <div className="flex justify-between text-warm-600">
+                <span>উপমোট (Subtotal):</span>
+                <span className="font-semibold text-botanical-900">{formatBDT(subtotal)}</span>
+              </div>
+              <div className="flex justify-between text-warm-600">
+                <span>
+                  ডেলিভারি ফি ({deliveryZone === 'inside_dhaka' ? 'ঢাকা' : 'ঢাকার বাইরে'}):
+                </span>
+                <span className="font-semibold text-emerald-700">{formatBDT(shippingFee)}</span>
+              </div>
+              <div className="flex justify-between text-base font-extrabold text-botanical-950 border-t border-warm-200 pt-3">
+                <span>সর্বমোট (Total COD):</span>
+                <span className="text-emerald-800">{formatBDT(total)}</span>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting || !phoneConsent}
+              className={`w-full py-4 rounded-2xl text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 ${
+                isSubmitting || !phoneConsent
+                  ? 'bg-warm-400 cursor-not-allowed'
+                  : 'bg-botanical-700 hover:bg-botanical-800 active:scale-98'
+              }`}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>অর্ডার প্রসেস হচ্ছে...</span>
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-5 h-5" />
+                  <span>অর্ডার নিশ্চিত করুন ({formatBDT(total)})</span>
+                </>
+              )}
+            </button>
+
+            {/* Trust Assurances */}
+            <div className="pt-2 border-t border-warm-100 space-y-2 text-[11px] text-warm-500">
+              <div className="flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-botanical-600 flex-shrink-0" />
+                <span>
+                  {deliveryZone === 'inside_dhaka'
+                    ? '২৪-৪৮ ঘণ্টার মধ্যে ঢাকা নার্সারি থেকে ডেলিভারি।'
+                    : '২-৪ কার্যদিবসে ৬৪ জেলায় সুরক্ষিত উদ্ভিদের কার্টনে ডেলিভারি।'}
                 </span>
               </div>
-            ))}
+              <div className="flex items-center gap-2">
+                <PackageCheck className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
+                <span>ট্রানজিটে কোনো ক্ষতি হলে ২৪ ঘণ্টার মধ্যে ফ্রি রিপ্লেসমেন্ট।</span>
+              </div>
+            </div>
+
+            {/* Policy Links */}
+            <div className="text-[11px] text-warm-500 text-center space-x-3 pt-1">
+              <Link href="/policies/shipping-and-delivery" className="text-botanical-700 hover:underline">
+                শিপিং পলিসি
+              </Link>
+              <span>•</span>
+              <Link href="/policies/live-plant-replacement" className="text-botanical-700 hover:underline">
+                রিপ্লেসমেন্ট গ্যারান্টি
+              </Link>
+              <span>•</span>
+              <Link href="/policies/cod-terms" className="text-botanical-700 hover:underline">
+                COD শর্তাবলী
+              </Link>
+            </div>
           </div>
-
-          {/* Bill Calculation */}
-          <div className="space-y-3 pt-4 border-t border-warm-200 text-sm">
-            <div className="flex justify-between text-botanical-700">
-              <span>সাবটোটাল</span>
-              <span className="font-bold text-botanical-900">{formatBDT(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-botanical-700">
-              <span>
-                ডেলিভারি চার্জ ({deliveryZone === 'inside_dhaka' ? 'ঢাকা' : 'ঢাকার বাইরে'})
-              </span>
-              <span className="font-bold text-botanical-900">{formatBDT(shippingFee)}</span>
-            </div>
-            <div className="flex justify-between text-lg font-black text-botanical-950 pt-2 border-t border-warm-100">
-              <span>সর্বমোট প্রদেয়</span>
-              <span className="text-botanical-700">{formatBDT(total)}</span>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-xl bg-botanical-700 hover:bg-botanical-800 disabled:bg-warm-400 text-white font-bold text-base shadow-sm transition active:scale-98"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>অর্ডার তৈরি হচ্ছে...</span>
-              </>
-            ) : (
-              <>
-                <Check className="w-5 h-5" />
-                <span>ক্যাশ অন ডেলিভারিতে অর্ডার নিশ্চিত করুন</span>
-              </>
-            )}
-          </button>
-
-          <p className="text-[11px] text-center text-warm-500 leading-normal">
-            অর্ডার কনফার্ম করার পর আমাদের কাস্টমার প্রতিনিধি ডেলিভারির সময় জানিয়ে দেবেন।
-          </p>
         </div>
       </form>
     </div>
