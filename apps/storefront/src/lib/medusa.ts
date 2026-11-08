@@ -55,17 +55,22 @@ export interface StoreCategory {
   description?: string
 }
 
+export const BANGLADESH_REGION_ID = 'reg_01M6VHE7X03ZFRY5J3NT8M10TV'
+
 /**
- * Fetch products from Medusa Store API with plant care metadata and prices
+ * Fetch products from Medusa Store API with plant care metadata and calculated BDT prices
  */
 export async function getStoreProducts(params?: {
   category_id?: string[]
   handle?: string
   limit?: number
+  region_id?: string
 }): Promise<StoreProduct[]> {
   try {
+    const regionId = params?.region_id || BANGLADESH_REGION_ID
     const queryParams: Record<string, any> = {
-      fields: '+metadata,+variants.prices,+categories',
+      region_id: regionId,
+      fields: '+metadata,+variants.prices,+variants.calculated_price,+categories',
       limit: params?.limit || 20,
     }
     if (params?.category_id?.length) {

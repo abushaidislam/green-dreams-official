@@ -14,7 +14,13 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { StoreProduct } from '@/lib/medusa'
-import { formatBDT, getWhatsAppSupportLink } from '@/lib/utils'
+import {
+  formatBDT,
+  getWhatsAppSupportLink,
+  cleanProductTitle,
+  getProductPriceDetails,
+} from '@/lib/utils'
+import { NURSERY_CONTACT } from '@/lib/bangladesh-data'
 import { useCart } from '@/context/CartContext'
 import { PlantCareAccordion } from '@/components/PlantCareAccordion'
 
@@ -30,16 +36,20 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
     product.variants?.find((v) => v.id === selectedVariantId) ||
     product.variants?.[0]
 
-  const price =
-    selectedVariant?.prices?.find((p) => p.currency_code === 'bdt')?.amount || 0
+  const priceDetails = getProductPriceDetails(product, selectedVariant?.id)
+  const price = priceDetails.amount
 
-  const imageUrl =
-    product.images?.[0]?.url ||
-    'https://images.unsplash.com/photo-1593482892290-f54927ae1bf6?auto=format&fit=crop&w=800&q=80'
+  const fallbackPlantImage =
+    'https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80'
+  const [imageUrl, setImageUrl] = useState<string>(
+    product.images?.[0]?.url || product.thumbnail || fallbackPlantImage
+  )
+
+  const cleanTitle = cleanProductTitle(product.title)
 
   const whatsAppLink = getWhatsAppSupportLink(
-    '8801700000000',
-    `Hello Green Dreams, I am interested in ${product.title} (${selectedVariant?.title || ''}). Can you provide care guidance?`
+    NURSERY_CONTACT.phoneRaw,
+    `Hello Green Dreams, I am interested in ${cleanTitle} (${selectedVariant?.title || ''}). Can you provide care guidance?`
   )
 
   const handleAddToCart = async () => {
@@ -63,7 +73,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
           সব গাছ
         </Link>
         <span>/</span>
-        <span className="text-botanical-900 truncate max-w-xs">{product.title}</span>
+        <span className="text-botanical-900 truncate max-w-xs">{cleanTitle}</span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
@@ -72,11 +82,12 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
           <div className="relative aspect-square w-full rounded-3xl bg-warm-100 overflow-hidden border border-warm-200 shadow-sm">
             <Image
               src={imageUrl}
-              alt={product.title}
+              alt={cleanTitle}
               fill
               priority
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
+              onError={() => setImageUrl(fallbackPlantImage)}
             />
           </div>
 

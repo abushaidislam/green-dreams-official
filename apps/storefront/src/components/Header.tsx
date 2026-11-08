@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Sprout, ShoppingBag, Menu, X, Phone, MessageCircle } from 'lucide-react'
 import { useCart } from '@/context/CartContext'
 import { getWhatsAppSupportLink } from '@/lib/utils'
@@ -16,9 +17,23 @@ export function Header() {
   )
 
   return (
-    <header className="border-b border-warm-200 bg-white/90 backdrop-blur-md sticky top-0 z-40 transition-colors">
+    <header className="sticky top-0 z-40 border-b border-warm-200/50 transition-colors">
+      {/* Background with plant image and smooth glass wash */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <Image
+          src="/images/hero-bg.webp"
+          alt="Green Dreams Navigation Background"
+          fill
+          priority
+          quality={85}
+          className="object-cover object-top"
+        />
+        {/* Soft, clean translucent glass wash so text and icons are 100% crisp and readable */}
+        <div className="absolute inset-0 bg-warm-50/85 backdrop-blur-md" />
+      </div>
+
       {/* Top Banner */}
-      <div className="bg-botanical-900 text-botanical-100 text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-3">
+      <div className="bg-botanical-950/90 text-botanical-100 text-[11px] sm:text-xs py-1.5 px-4 text-center font-medium flex items-center justify-center gap-3 backdrop-blur-xs">
         <span>🌱 ঢাকা শহরের ভেতরে ৬০ টাকা ডেলিভারি ও সারা বাংলাদেশে ক্যাশ অন ডেলিভারি (COD)</span>
         <a
           href={whatsAppLink}
@@ -106,7 +121,7 @@ export function Header() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-warm-200 bg-white px-4 pt-3 pb-6 space-y-3">
+        <div className="md:hidden border-t border-warm-200/60 bg-warm-50/95 backdrop-blur-md px-4 pt-3 pb-6 space-y-3">
           <Link
             href="/shop"
             onClick={() => setMobileMenuOpen(false)}
