@@ -8,7 +8,8 @@
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "test:cod": "medusa exec ./src/scripts/test-cod-flow.ts",
-    "test": "echo \"Backend unit tests placeholder\" && exit 0"
+    "test:qa": "medusa exec ./src/scripts/test-phase6-qa.ts",
+    "test": "medusa exec ./src/scripts/test-phase6-qa.ts"
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.22.4",

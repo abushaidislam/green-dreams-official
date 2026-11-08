@@ -31,25 +31,40 @@ export default async function HomePage() {
   return (
     <div className="flex-1 flex flex-col space-y-16 sm:space-y-24">
       {/* 1. Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-botanical-50/80 via-warm-50 to-warm-50 py-16 sm:py-24 border-b border-warm-200/60">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section className="relative overflow-hidden min-h-[560px] sm:min-h-[600px] flex items-center py-16 sm:py-24 border-b border-warm-200/60">
+        {/* Background Plant Image */}
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/hero-bg.webp"
+            alt="Green Dreams Nursery - Plants for Home & Balcony"
+            fill
+            priority
+            quality={90}
+            className="object-cover object-right lg:object-center"
+          />
+          {/* Subtle responsive overlay to ensure text contrast while letting plants remain vibrant */}
+          <div className="absolute inset-0 bg-gradient-to-r from-warm-50/95 via-warm-50/85 to-warm-50/30 sm:via-warm-50/75 lg:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-warm-50/70 via-transparent to-transparent sm:hidden" />
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             <div className="lg:col-span-7 text-center lg:text-left space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-botanical-100 text-botanical-800 text-xs font-bold border border-botanical-200 shadow-2xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-botanical-100/90 backdrop-blur-xs text-botanical-800 text-xs font-bold border border-botanical-200/80 shadow-2xs">
                 <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
                 <span>ঢাকা নার্সারি থেকে সরাসরি আপনার ঘরে</span>
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-botanical-950 tracking-tight leading-[1.15]">
                 সবুজে সাজুক আপনার ঘর ও মন
               </h1>
-              <p className="text-base sm:text-lg text-botanical-800 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
+              <p className="text-base sm:text-lg text-botanical-800 max-w-xl mx-auto lg:mx-0 font-medium leading-relaxed">
                 বাংলাদেশের প্রিমিয়াম অনলাইন নার্সারি। বাতাস পরিশোধনকারী ইনডোর প্ল্যান্টস, ব্যালকনি গাছ এবং প্রতিটি গাছের জন্য প্রমাণিত যত্ন নির্দেশিকা।
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start pt-2">
                 <Link
                   href="/shop"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-botanical-700 hover:bg-botanical-800 text-white font-bold text-sm shadow-sm transition active:scale-98"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-botanical-700 hover:bg-botanical-800 text-white font-bold text-sm shadow-md transition active:scale-98"
                 >
                   <span>গাছ দেখুন (Shop Plants)</span>
                   <ArrowRight className="w-4 h-4" />
@@ -58,7 +73,7 @@ export default async function HomePage() {
                   href={whatsAppLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-warm-300 hover:bg-warm-100 text-botanical-900 font-bold text-sm shadow-2xs transition"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/90 backdrop-blur-xs border border-warm-300 hover:bg-white text-botanical-900 font-bold text-sm shadow-2xs transition"
                 >
                   <MessageCircle className="w-4 h-4 text-emerald-600" />
                   <span>হোয়াটসঅ্যাপে গাছ বাছাই পরামর্শ</span>
@@ -66,38 +81,46 @@ export default async function HomePage() {
               </div>
 
               {/* Trust Micro-Badges */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-6 border-t border-warm-200/80 text-xs text-botanical-700 font-medium">
-                <div className="flex items-center gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-6 border-t border-warm-300/60 text-xs text-botanical-800 font-semibold">
+                <div className="flex items-center gap-2 bg-white/60 sm:bg-transparent backdrop-blur-2xs sm:backdrop-blur-none p-2 sm:p-0 rounded-lg">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>ক্যাশ অন ডেলিভারি (COD)</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 bg-white/60 sm:bg-transparent backdrop-blur-2xs sm:backdrop-blur-none p-2 sm:p-0 rounded-lg">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>ঢাকা ৬০৳ ডেলিভারি</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 col-span-2 sm:col-span-1 bg-white/60 sm:bg-transparent backdrop-blur-2xs sm:backdrop-blur-none p-2 sm:p-0 rounded-lg">
                   <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <span>১০০% সতেজ গাছ গ্যারান্টি</span>
                 </div>
               </div>
             </div>
 
-            {/* Hero Image Showcase */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative aspect-4/5 w-full max-w-md mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-warm-200">
-                <Image
-                  src="https://images.unsplash.com/photo-1545241047-6083a3684587?auto=format&fit=crop&w=800&q=80"
-                  alt="Green Dreams Plant Showcase"
-                  fill
-                  priority
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-botanical-950/60 via-transparent to-transparent flex flex-col justify-end p-6 text-white">
-                  <span className="text-xs uppercase tracking-widest font-bold text-botanical-200">
-                    আজকের সেরা আকর্ষণ
+            {/* Hero Feature Highlight Badge */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-end">
+              <div className="p-6 rounded-3xl bg-white/80 backdrop-blur-md border border-white/80 shadow-xl max-w-sm w-full space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-botanical-100 flex items-center justify-center text-botanical-700">
+                    <Sprout className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-wider text-botanical-600">১০০% সতেজ গাছ</span>
+                    <h4 className="text-sm font-extrabold text-botanical-900">স্বাস্থ্যোজ্জ্বল ট্রপিক্যাল প্ল্যান্টস</h4>
+                  </div>
+                </div>
+                <p className="text-xs text-botanical-700 leading-relaxed">
+                  প্রতিটি গাছ অভিজ্ঞ মালী দ্বারা পরিচর্যাকৃত এবং নিরাপদ প্যাকেজিংয়ে সুস্থ অবস্থায় আপনার দরজায় পৌঁছানো হয়।
+                </p>
+                <div className="flex items-center justify-between pt-2 border-t border-warm-200/80 text-xs text-botanical-800 font-medium">
+                  <span className="flex items-center gap-1.5">
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    পর্যাপ্ত আলো ও যত্ন
                   </span>
-                  <h3 className="text-xl font-extrabold mt-1">Monstera Deliciosa</h3>
-                  <p className="text-xs text-warm-100 mt-1">প্রাকৃতিক এয়ার ফিল্টার ও স্নিগ্ধ ট্রপিক্যাল লুক</p>
+                  <span className="flex items-center gap-1.5">
+                    <Droplets className="w-3.5 h-3.5 text-cyan-600" />
+                    সঠিক পানি নির্দেশিকা
+                  </span>
                 </div>
               </div>
             </div>

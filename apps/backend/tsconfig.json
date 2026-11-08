@@ -10,7 +10,13 @@
     "experimentalDecorators": true,
     "outDir": ".medusa/server",
     "declaration": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "react": ["./node_modules/@types/react"],
+      "react-dom": ["./node_modules/@types/react-dom"],
+      "react/jsx-runtime": ["./node_modules/@types/react/jsx-runtime"]
+    }
   },
   "include": ["src/**/*", "medusa-config.ts"]
 }

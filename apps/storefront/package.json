@@ -6,7 +6,10 @@
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:unit": "tsx src/lib/test-bangladesh-rules.ts",
+    "test:security": "tsx src/lib/test-security-audit.ts",
+    "test": "pnpm test:unit && pnpm test:security"
   },
   "dependencies": {
     "@medusajs/js-sdk": "2.22.4",
@@ -24,6 +27,7 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.3"
   }
 }

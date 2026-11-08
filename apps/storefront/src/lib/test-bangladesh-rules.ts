@@ -8,6 +8,7 @@ import {
   NURSERY_CONTACT,
 } from './bangladesh-data'
 import { getWhatsAppSupportLink, formatBDT } from './utils'
+import { validatePlantCareProfile } from './plant-care-schema'
 
 console.log('🧪 [Phase 5 Test Suite] Running Bangladesh Business Details & Validation Tests...\n')
 
@@ -133,6 +134,54 @@ assert(formatBDT(130) === '৳130', 'Format BDT 130 currency symbol')
 
 const waLink = getWhatsAppSupportLink(NURSERY_CONTACT.phoneRaw, 'Hello Green Dreams')
 assert(waLink.startsWith('https://wa.me/8801712345678?text=Hello%20Green%20Dreams'), 'WhatsApp click-to-chat URL is properly constructed and encoded')
+
+// ==========================================
+// 6. Plant Care Schema Validation Tests
+// ==========================================
+console.log('\n--- 6. Testing Plant Care Schema Validation ---')
+
+const validCare = {
+  plantType: 'indoor',
+  scientificName: 'Sansevieria trifasciata',
+  light: 'Bright indirect light',
+  watering: 'Every 2-3 weeks',
+  humidity: '40-50%',
+  difficulty: 'easy',
+  petSafety: 'unsafe',
+  careInstructions: 'Wipe leaves monthly with damp cloth',
+  sourceVerified: true,
+}
+
+const vResult = validatePlantCareProfile(validCare)
+assert(vResult.isValid && vResult.sanitized?.sourceVerified === true, 'Validate valid plant care profile')
+
+const xssCare = {
+  plantType: 'indoor',
+  difficulty: 'easy',
+  petSafety: 'safe',
+  careInstructions: '<script>alert("xss")</script>Keep moist',
+}
+const xResult = validatePlantCareProfile(xssCare)
+assert(
+  xResult.isValid && !xResult.sanitized?.careInstructions?.includes('<script>'),
+  'Sanitize potential HTML/script injection from care instructions'
+)
+
+const invalidEnumCare = {
+  plantType: 'carnivorous-alien',
+  difficulty: 'extreme',
+  petSafety: 'lethal',
+  sourceVerified: 'not-a-boolean',
+}
+const invResult = validatePlantCareProfile(invalidEnumCare)
+assert(
+  !invResult.isValid && invResult.errors.length === 4,
+  'Reject invalid plantType, difficulty, petSafety, and non-boolean sourceVerified',
+  `Found errors: ${invResult.errors.length}`
+)
+
+const nullCare = validatePlantCareProfile(null)
+assert(!nullCare.isValid, 'Reject null plant care profile')
 
 // ==========================================
 // Summary
