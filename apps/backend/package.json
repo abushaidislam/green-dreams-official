@@ -5,7 +5,7 @@
   "scripts": {
     "build": "medusa build",
     "dev": "medusa develop",
-    "start": "medusa build && medusa start",
+    "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
     "test:cod": "medusa exec ./src/scripts/test-cod-flow.ts",
     "test:qa": "medusa exec ./src/scripts/test-phase6-qa.ts",
