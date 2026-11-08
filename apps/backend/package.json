@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "medusa build",
+    "build": "node --max-old-space-size=2048 ./node_modules/@medusajs/cli/dist/index.js build",
     "dev": "medusa develop",
     "start": "medusa start",
     "seed": "medusa exec ./src/scripts/seed.ts",
