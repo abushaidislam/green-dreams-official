@@ -1,11 +1,11 @@
-FROM node:22-bookworm-slim AS runner
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+FROM node:22-bookworm-slim
 
 WORKDIR /app
 
-# Copy workspace configuration and lockfile
+# Install pnpm globally
+RUN npm install -g pnpm@12.5.1
+
+# Copy workspace configuration and package definitions
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/backend/package.json ./apps/backend/
 COPY apps/storefront/package.json ./apps/storefront/
@@ -20,7 +20,7 @@ COPY apps/backend ./apps/backend
 WORKDIR /app/apps/backend
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=2048"
-RUN npx medusa build
+RUN pnpm build
 
 # Production runtime configuration
 EXPOSE 9000
