@@ -19,7 +19,7 @@ export const revalidate = 60
 
 export default async function HomePage() {
   const [products, categories] = await Promise.all([
-    getStoreProducts({ limit: 6 }),
+    getStoreProducts({ limit: 8 }),
     getStoreCategories(),
   ])
 
@@ -165,7 +165,7 @@ export default async function HomePage() {
             <p className="text-sm text-botanical-700">বর্তমানে কোনো পণ্য পাওয়া যায়নি।</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
