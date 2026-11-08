@@ -22,6 +22,9 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 RUN pnpm build
 
+# Copy admin dashboard output so medusa start finds public/admin/index.html
+RUN cp -r .medusa/server/public ./public
+
 # Production runtime configuration
 EXPOSE 9000
 ENV PORT=9000
