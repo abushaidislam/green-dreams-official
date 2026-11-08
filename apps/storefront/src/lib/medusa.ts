@@ -70,7 +70,7 @@ export async function getStoreProducts(params?: {
     const regionId = params?.region_id || BANGLADESH_REGION_ID
     const queryParams: Record<string, any> = {
       region_id: regionId,
-      fields: '+metadata,+variants.prices,+variants.calculated_price,+categories',
+      fields: '+metadata,+variants.prices,+variants.calculated_price,*categories',
       limit: params?.limit || 20,
     }
     if (params?.category_id?.length) {
