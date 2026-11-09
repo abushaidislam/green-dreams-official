@@ -47,6 +47,34 @@ export function cleanProductTitle(title?: string | null): string {
 }
 
 /**
+ * Strips internal editorial notices from descriptions for clean customer-facing UI
+ */
+export function cleanProductDescription(description?: string | null): string {
+  if (!description) return ''
+  return description.replace(/\[SAMPLE.*?\]/gi, '').trim()
+}
+
+/**
+ * Extracts the authoritative numeric BDT price for a single variant
+ */
+export function getVariantPrice(variant: any): number {
+  if (!variant) return 0
+  const calc = variant.calculated_price?.calculated_amount ?? variant.calculated_price?.original_amount
+  if (calc !== undefined && calc !== null && !isNaN(Number(calc)) && Number(calc) > 0) {
+    return Number(calc)
+  }
+  const bdt = variant.prices?.find((p: any) => p.currency_code === 'bdt')?.amount
+  if (bdt !== undefined && bdt !== null && !isNaN(Number(bdt)) && Number(bdt) > 0) {
+    return Number(bdt)
+  }
+  const any = variant.prices?.[0]?.amount
+  if (any !== undefined && any !== null && !isNaN(Number(any)) && Number(any) > 0) {
+    return Number(any)
+  }
+  return 0
+}
+
+/**
  * Extracts authoritative BDT price information from a StoreProduct
  */
 export function getProductPriceDetails(product: any, variantId?: string): {
@@ -60,25 +88,8 @@ export function getProductPriceDetails(product: any, variantId?: string): {
   const variants = product?.variants || []
   const selectedVariant = variantId ? variants.find((v: any) => v.id === variantId) : variants[0]
 
-  const getVariantAmount = (v: any): number => {
-    if (!v) return 0
-    const calc = v.calculated_price?.calculated_amount ?? v.calculated_price?.original_amount
-    if (calc !== undefined && calc !== null && !isNaN(Number(calc)) && Number(calc) > 0) {
-      return Number(calc)
-    }
-    const bdt = v.prices?.find((p: any) => p.currency_code === 'bdt')?.amount
-    if (bdt !== undefined && bdt !== null && !isNaN(Number(bdt)) && Number(bdt) > 0) {
-      return Number(bdt)
-    }
-    const any = v.prices?.[0]?.amount
-    if (any !== undefined && any !== null && !isNaN(Number(any)) && Number(any) > 0) {
-      return Number(any)
-    }
-    return 0
-  }
-
-  const selectedAmount = getVariantAmount(selectedVariant)
-  const allAmounts = variants.map(getVariantAmount).filter((a: number) => a > 0)
+  const selectedAmount = getVariantPrice(selectedVariant)
+  const allAmounts = variants.map(getVariantPrice).filter((a: number) => a > 0)
 
   const minAmount = allAmounts.length > 0 ? Math.min(...allAmounts) : selectedAmount
   const maxAmount = allAmounts.length > 0 ? Math.max(...allAmounts) : selectedAmount

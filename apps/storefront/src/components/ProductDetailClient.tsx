@@ -18,7 +18,9 @@ import {
   formatBDT,
   getWhatsAppSupportLink,
   cleanProductTitle,
+  cleanProductDescription,
   getProductPriceDetails,
+  getVariantPrice,
 } from '@/lib/utils'
 import { NURSERY_CONTACT } from '@/lib/bangladesh-data'
 import { useCart } from '@/context/CartContext'
@@ -115,7 +117,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
               </span>
             )}
             <h1 className="text-3xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight leading-snug">
-              {product.title}
+              {cleanTitle}
             </h1>
             {product.subtitle && (
               <p className="text-base text-botanical-700 font-medium">
@@ -137,7 +139,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
           {/* Description */}
           {product.description && (
             <div className="text-sm text-botanical-800 leading-relaxed space-y-2">
-              <p>{product.description}</p>
+              <p>{cleanProductDescription(product.description)}</p>
             </div>
           )}
 
@@ -149,8 +151,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
               </label>
               <div className="grid grid-cols-2 gap-3">
                 {product.variants.map((v) => {
-                  const vPrice =
-                    v.prices?.find((p) => p.currency_code === 'bdt')?.amount || 0
+                  const vPrice = getVariantPrice(v)
                   const isSelected = v.id === selectedVariantId
 
                   return (
