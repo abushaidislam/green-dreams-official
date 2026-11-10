@@ -31,9 +31,9 @@ export default async function ShopPage({
     : allProducts
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-8">
       {/* Page Title */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold text-botanical-600">
           <Link href="/" className="hover:underline">
             হোম
@@ -41,10 +41,10 @@ export default async function ShopPage({
           <span>/</span>
           <span>সব গাছ</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight">
           গাছের কালেকশন (All Plants)
         </h1>
-        <p className="text-sm text-botanical-700 max-w-2xl">
+        <p className="text-xs sm:text-sm text-botanical-700 max-w-2xl">
           আমাদের নার্সারির প্রতিটি গাছ বিশেষভাবে লালন-পালন করা এবং ঘরের ভেতর বা ব্যালকনিতে বেঁচে থাকার উপযোগী।
         </p>
       </div>
@@ -53,10 +53,10 @@ export default async function ShopPage({
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         <Link
           href="/shop"
-          className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition ${
+          className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition active:scale-96 ${
             !categoryHandle
-              ? 'bg-botanical-800 text-white shadow-xs'
-              : 'bg-white border border-warm-200 text-botanical-800 hover:bg-warm-100'
+              ? 'bg-botanical-900 text-white shadow-xs'
+              : 'bg-white border border-warm-200/90 text-botanical-800 hover:bg-warm-100 shadow-2xs'
           }`}
         >
           সব গাছ ({allProducts.length})
@@ -65,10 +65,10 @@ export default async function ShopPage({
           <Link
             key={cat.id}
             href={`/shop?category=${cat.handle}`}
-            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition ${
+            className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition active:scale-96 ${
               categoryHandle === cat.handle
-                ? 'bg-botanical-800 text-white shadow-xs'
-                : 'bg-white border border-warm-200 text-botanical-800 hover:bg-warm-100'
+                ? 'bg-botanical-900 text-white shadow-xs'
+                : 'bg-white border border-warm-200/90 text-botanical-800 hover:bg-warm-100 shadow-2xs'
             }`}
           >
             {cat.name}
@@ -78,13 +78,13 @@ export default async function ShopPage({
 
       {/* Product Grid */}
       {filteredProducts.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-warm-200 p-8 space-y-3">
+        <div className="text-center py-16 bg-white rounded-3xl border border-warm-200/90 p-8 space-y-3 shadow-2xs">
           <Sprout className="w-12 h-12 text-warm-400 mx-auto" />
-          <h3 className="font-bold text-lg text-botanical-900">এই ক্যাটাগরিতে কোনো গাছ পাওয়া যায়নি</h3>
-          <p className="text-sm text-botanical-600">অন্য কোনো ক্যাটাগরি ব্রাউজ করুন।</p>
+          <h3 className="font-bold text-base text-botanical-900">এই ক্যাটাগরিতে কোনো গাছ পাওয়া যায়নি</h3>
+          <p className="text-xs sm:text-sm text-botanical-600">অন্য কোনো ক্যাটাগরি ব্রাউজ করুন।</p>
           <Link
             href="/shop"
-            className="inline-block mt-3 px-5 py-2 rounded-xl bg-botanical-700 text-white text-xs font-semibold"
+            className="inline-block mt-3 px-5 py-2.5 rounded-xl bg-botanical-800 text-white text-xs font-bold active:scale-96"
           >
             সব গাছ দেখুন
           </Link>

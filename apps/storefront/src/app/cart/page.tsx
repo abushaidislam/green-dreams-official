@@ -26,7 +26,7 @@ export default function CartPage() {
   )
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-8">
       {/* Title */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold text-botanical-600">
@@ -36,25 +36,25 @@ export default function CartPage() {
           <span>/</span>
           <span>শপিং কার্ট</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight">
           আপনার শপিং ব্যাগ ({items.length}টি আইটেম)
         </h1>
       </div>
 
       {items.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-warm-200 p-8 space-y-4 max-w-xl mx-auto">
-          <div className="w-16 h-16 rounded-2xl bg-botanical-100 text-botanical-700 flex items-center justify-center mx-auto">
+        <div className="text-center py-20 bg-white rounded-3xl border border-warm-200/90 p-8 space-y-4 max-w-xl mx-auto shadow-2xs">
+          <div className="w-16 h-16 rounded-2xl bg-botanical-50 text-botanical-800 flex items-center justify-center mx-auto border border-botanical-100">
             <ShoppingBag className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-bold text-botanical-900">
+          <h2 className="text-xl sm:text-2xl font-bold text-botanical-950">
             আপনার কার্ট বর্তমানে খালি
           </h2>
-          <p className="text-sm text-botanical-600">
+          <p className="text-xs sm:text-sm text-botanical-600">
             আপনার পছন্দের ইনডোর বা ব্যালকনি গাছগুলো খুঁজে নিতে আমাদের ক্যাটালগ ঘুরে দেখুন।
           </p>
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-botanical-700 hover:bg-botanical-800 text-white font-bold text-sm shadow-sm transition"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-botanical-900 hover:bg-botanical-950 text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-96"
           >
             <Sprout className="w-4 h-4" />
             <span>গাছ ব্রাউজ করুন (Shop All)</span>
@@ -63,14 +63,14 @@ export default function CartPage() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Items List */}
-          <div className="lg:col-span-8 bg-white rounded-3xl border border-warm-200 overflow-hidden divide-y divide-warm-100 shadow-xs">
+          <div className="lg:col-span-8 bg-white rounded-3xl border border-warm-200/90 overflow-hidden divide-y divide-warm-100 shadow-2xs">
             {items.map((item) => (
               <div
                 key={item.id}
-                className="p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center justify-between"
+                className="p-5 sm:p-6 flex flex-col sm:flex-row gap-5 items-start sm:items-center justify-between"
               >
                 <div className="flex items-center gap-4">
-                  <div className="relative w-20 h-20 rounded-2xl bg-warm-100 overflow-hidden border border-warm-200 flex-shrink-0">
+                  <div className="relative w-20 h-20 rounded-2xl bg-warm-100 overflow-hidden border border-warm-200/80 ring-1 ring-black/5 flex-shrink-0">
                     <Image
                       src={
                         item.thumbnail ||
@@ -83,7 +83,7 @@ export default function CartPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <h3 className="font-bold text-base text-botanical-900">
+                    <h3 className="font-bold text-sm sm:text-base text-botanical-950">
                       {item.variant?.product?.title || item.title}
                     </h3>
                     {item.variant?.title && (
@@ -91,7 +91,7 @@ export default function CartPage() {
                         ভ্যারিয়েন্ট: {item.variant.title}
                       </span>
                     )}
-                    <span className="text-sm font-extrabold text-botanical-900 block">
+                    <span className="text-sm font-extrabold text-botanical-950 block tabular-nums">
                       {formatBDT(item.unit_price)}
                     </span>
                   </div>
@@ -99,22 +99,22 @@ export default function CartPage() {
 
                 <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                   {/* Quantity Buttons */}
-                  <div className="inline-flex items-center rounded-xl border border-warm-300 bg-warm-50 p-1">
+                  <div className="inline-flex items-center rounded-xl border border-warm-200 bg-warm-50 p-1 shadow-2xs">
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                       disabled={isLoading}
-                      className="p-1.5 hover:bg-white rounded-lg text-botanical-800 transition"
+                      className="p-1.5 hover:bg-white rounded-lg text-botanical-800 transition active:scale-90"
                       aria-label="কমান"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="w-8 text-center font-bold text-sm text-botanical-900">
+                    <span className="w-8 text-center font-bold text-xs sm:text-sm text-botanical-950 tabular-nums">
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                       disabled={isLoading}
-                      className="p-1.5 hover:bg-white rounded-lg text-botanical-800 transition"
+                      className="p-1.5 hover:bg-white rounded-lg text-botanical-800 transition active:scale-90"
                       aria-label="বাড়ান"
                     >
                       <Plus className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function CartPage() {
                   </div>
 
                   {/* Subtotal for Item */}
-                  <span className="text-base font-black text-botanical-950 min-w-16 text-right">
+                  <span className="text-sm sm:text-base font-black text-botanical-950 min-w-16 text-right tabular-nums">
                     {formatBDT(item.unit_price * item.quantity)}
                   </span>
 
@@ -130,10 +130,10 @@ export default function CartPage() {
                   <button
                     onClick={() => removeItem(item.id)}
                     disabled={isLoading}
-                    className="p-2 text-warm-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition"
+                    className="p-2 text-warm-400 hover:text-rose-600 rounded-xl hover:bg-rose-50 transition active:scale-90"
                     aria-label="মুছে ফেলুন"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
@@ -141,13 +141,13 @@ export default function CartPage() {
           </div>
 
           {/* Order Summary Box */}
-          <div className="lg:col-span-4 bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-6 shadow-xs">
-            <h2 className="text-xl font-extrabold text-botanical-950">অর্ডার সামারি</h2>
+          <div className="lg:col-span-4 bg-white rounded-3xl border border-warm-200/90 p-6 sm:p-8 space-y-6 shadow-2xs">
+            <h2 className="text-lg sm:text-xl font-extrabold text-botanical-950">অর্ডার সামারি</h2>
 
             <div className="space-y-3 text-sm divide-y divide-warm-100">
               <div className="flex justify-between text-botanical-700 pt-1">
                 <span>পণ্যের মোট মূল্য ({items.length}টি)</span>
-                <span className="font-bold text-botanical-900">{formatBDT(subtotal)}</span>
+                <span className="font-bold text-botanical-950 tabular-nums">{formatBDT(subtotal)}</span>
               </div>
               <div className="flex justify-between text-botanical-700 pt-3">
                 <span>ডেলিভারি ফি</span>
@@ -157,14 +157,14 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-base font-black text-botanical-950 pt-3">
                 <span>মোট প্রদেয় (আনুমানিক)</span>
-                <span>{formatBDT(subtotal)}</span>
+                <span className="tabular-nums">{formatBDT(subtotal)}</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-botanical-50 border border-botanical-200 text-xs text-botanical-800 space-y-1.5">
-              <div className="flex items-center gap-1.5 font-bold text-botanical-900">
-                <Truck className="w-4 h-4 text-botanical-600" />
-                <span>ডেলিভারি রেট:</span>
+            <div className="p-4 rounded-2xl bg-botanical-50/80 border border-botanical-100 text-xs text-botanical-800 space-y-1.5 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-botanical-950">
+                <Truck className="w-4 h-4 text-emerald-700" />
+                <span>ডেলিভারি চার্জ:</span>
               </div>
               <p>• ঢাকা সিটির ভেতরে: ৳৬০</p>
               <p>• ঢাকার বাইরে (সারা দেশ): ৳১৩০</p>
@@ -172,13 +172,13 @@ export default function CartPage() {
 
             <Link
               href="/checkout"
-              className="w-full inline-flex items-center justify-center gap-2 py-4 rounded-xl bg-botanical-700 hover:bg-botanical-800 text-white font-bold text-base shadow-sm transition active:scale-98"
+              className="w-full inline-flex items-center justify-center gap-2 py-3.5 sm:py-4 rounded-xl bg-botanical-900 hover:bg-botanical-950 text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-96"
             >
               <span>ক্যাশ অন ডেলিভারিতে চেকআউট</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <div className="flex items-center justify-center gap-2 text-xs text-botanical-600 font-medium">
+            <div className="flex items-center justify-center gap-2 text-[11px] text-botanical-600 font-medium">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>১০০% নিরাপদ চেকআউট • কোনো অগ্রিম পেমেন্ট নেই</span>
             </div>

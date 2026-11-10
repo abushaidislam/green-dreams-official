@@ -64,7 +64,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-14 space-y-10">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-xs font-semibold text-botanical-600">
         <Link href="/" className="hover:underline">
@@ -78,10 +78,10 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
         <span className="text-botanical-900 truncate max-w-xs">{cleanTitle}</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14">
         {/* Left: Product Images */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative aspect-square w-full rounded-3xl bg-warm-100 overflow-hidden border border-warm-200 shadow-sm">
+          <div className="relative aspect-square w-full rounded-3xl bg-warm-100 overflow-hidden border border-warm-200/80 shadow-xs ring-1 ring-black/5">
             <Image
               src={imageUrl}
               alt={cleanTitle}
@@ -95,14 +95,19 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
 
           {/* Additional thumbnails if available */}
           {product.images && product.images.length > 1 && (
-            <div className="flex gap-3 overflow-x-auto pb-2">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
               {product.images.map((img) => (
-                <div
+                <button
                   key={img.id}
-                  className="relative w-20 h-20 rounded-xl overflow-hidden border border-warm-200 flex-shrink-0 bg-warm-100"
+                  onClick={() => setImageUrl(img.url)}
+                  className={`relative w-20 h-20 rounded-2xl overflow-hidden border flex-shrink-0 bg-warm-100 ring-1 transition ${
+                    imageUrl === img.url
+                      ? 'border-botanical-600 ring-botanical-600/30'
+                      : 'border-warm-200/80 ring-black/5 hover:border-warm-300'
+                  }`}
                 >
                   <Image src={img.url} alt={product.title} fill className="object-cover" />
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -112,33 +117,33 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
         <div className="lg:col-span-6 space-y-6">
           <div className="space-y-2">
             {product.metadata?.plant_care?.scientificName && (
-              <span className="text-sm italic font-mono text-botanical-600 block">
+              <span className="text-xs uppercase font-mono tracking-wider text-botanical-600 block">
                 {product.metadata.plant_care.scientificName}
               </span>
             )}
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight leading-snug">
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-botanical-950 tracking-tight leading-snug">
               {cleanTitle}
             </h1>
             {product.subtitle && (
-              <p className="text-base text-botanical-700 font-medium">
+              <p className="text-sm sm:text-base text-botanical-700 font-medium">
                 {product.subtitle}
               </p>
             )}
           </div>
 
           {/* Price & Stock Badge */}
-          <div className="flex items-center gap-4 py-2 border-y border-warm-200">
-            <span className="text-3xl font-black text-botanical-900">
+          <div className="flex items-center gap-4 py-3 border-y border-warm-200/80">
+            <span className="text-2xl sm:text-3xl font-black text-botanical-950 tabular-nums">
               {formatBDT(price)}
             </span>
-            <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300">
+            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
               ✓ নার্সারিতে স্টকে আছে
             </span>
           </div>
 
           {/* Description */}
           {product.description && (
-            <div className="text-sm text-botanical-800 leading-relaxed space-y-2">
+            <div className="text-xs sm:text-sm text-botanical-800 leading-relaxed space-y-2">
               <p>{cleanProductDescription(product.description)}</p>
             </div>
           )}
@@ -158,16 +163,16 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
                     <button
                       key={v.id}
                       onClick={() => setSelectedVariantId(v.id)}
-                      className={`p-3.5 rounded-xl border text-left transition ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all duration-200 ${
                         isSelected
-                          ? 'border-botanical-800 bg-botanical-50/80 ring-2 ring-botanical-600/30'
-                          : 'border-warm-200 bg-white hover:bg-warm-50'
+                          ? 'border-botanical-800 bg-botanical-50/90 ring-2 ring-botanical-600/30 shadow-2xs'
+                          : 'border-warm-200/90 bg-white hover:bg-warm-50'
                       }`}
                     >
-                      <span className="block font-bold text-sm text-botanical-900">
+                      <span className="block font-bold text-sm text-botanical-950">
                         {v.title}
                       </span>
-                      <span className="block text-xs text-botanical-600 font-semibold mt-0.5">
+                      <span className="block text-xs text-botanical-700 font-semibold mt-0.5 tabular-nums">
                         {formatBDT(vPrice)}
                       </span>
                     </button>
@@ -179,21 +184,21 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
 
           {/* Quantity & Add to Cart Controls */}
           <div className="space-y-3 pt-2">
-            <div className="flex items-center gap-4">
-              <div className="inline-flex items-center rounded-xl border border-warm-300 bg-white p-1">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="inline-flex items-center rounded-xl border border-warm-300 bg-white p-1 shadow-2xs">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 hover:bg-warm-100 rounded-lg text-botanical-800 transition"
+                  className="p-2 hover:bg-warm-100 rounded-lg text-botanical-800 transition active:scale-90"
                   aria-label="কমান"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
-                <span className="w-10 text-center font-bold text-sm text-botanical-900">
+                <span className="w-10 text-center font-bold text-sm text-botanical-950 tabular-nums">
                   {quantity}
                 </span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 hover:bg-warm-100 rounded-lg text-botanical-800 transition"
+                  className="p-2 hover:bg-warm-100 rounded-lg text-botanical-800 transition active:scale-90"
                   aria-label="বাড়ান"
                 >
                   <Plus className="w-4 h-4" />
@@ -203,20 +208,20 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
               <button
                 onClick={handleAddToCart}
                 disabled={isLoading || !selectedVariant?.id}
-                className={`flex-1 inline-flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl font-bold text-sm shadow-sm transition active:scale-98 ${
+                className={`flex-1 inline-flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition active:scale-96 ${
                   added
                     ? 'bg-emerald-600 text-white'
-                    : 'bg-botanical-700 hover:bg-botanical-800 text-white'
+                    : 'bg-botanical-900 hover:bg-botanical-950 text-white'
                 }`}
               >
                 {added ? (
                   <>
-                    <Check className="w-5 h-5" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                     <span>ব্যাগে যোগ করা হয়েছে!</span>
                   </>
                 ) : (
                   <>
-                    <ShoppingBag className="w-5 h-5" />
+                    <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span>কার্টে যোগ করুন — {formatBDT(price * quantity)}</span>
                   </>
                 )}
@@ -228,7 +233,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
               href={whatsAppLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 font-bold text-xs transition"
+              className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-50 border border-emerald-200/90 text-emerald-900 hover:bg-emerald-100/90 font-bold text-xs transition shadow-2xs active:scale-98"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600" />
               <span>এই গাছের পরিচর্যা নিয়ে হোয়াটসঅ্যাপে পরামর্শ নিন</span>
@@ -236,20 +241,20 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
           </div>
 
           {/* Delivery & Payment Guarantee Box */}
-          <div className="p-4 rounded-2xl bg-white border border-warm-200 space-y-2.5 text-xs text-botanical-800">
-            <div className="flex items-center gap-2 font-bold text-botanical-900">
-              <Truck className="w-4 h-4 text-botanical-600" />
+          <div className="p-4 rounded-2xl bg-white border border-warm-200/90 space-y-2.5 text-xs text-botanical-800 shadow-2xs">
+            <div className="flex items-center gap-2 font-bold text-botanical-950">
+              <Truck className="w-4 h-4 text-emerald-700" />
               <span>ডেলিভারি তথ্য ও চার্জ:</span>
             </div>
-            <ul className="space-y-1 pl-6 list-disc text-botanical-700">
+            <ul className="space-y-1.5 pl-6 list-disc text-botanical-700">
               <li>ঢাকা সিটির ভেতরে ডেলিভারি চার্জ মাত্র ৬০ টাকা (২-৩ দিন)।</li>
               <li>ঢাকার বাইরে সারা দেশে ডেলিভারি চার্জ ১৩০ টাকা (৩-৫ দিন)।</li>
-              <li>ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে মূল্য পরিশোধ করুন)।</li>
+              <li>ক্যাশ অন ডেলিভারি (পণ্য হাতে পেয়ে দেখে মূল্য পরিশোধ করুন)।</li>
             </ul>
           </div>
 
           {/* Plant Care Accordion */}
-          <div className="pt-4">
+          <div className="pt-2">
             <PlantCareAccordion plantCare={product.metadata?.plant_care} />
           </div>
         </div>

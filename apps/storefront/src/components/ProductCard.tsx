@@ -52,11 +52,11 @@ export function ProductCard({ product }: { product: StoreProduct }) {
   const variantCount = product.variants?.length || 1
 
   return (
-    <div className="group relative flex flex-col rounded-2xl bg-white border border-warm-200/70 p-2 sm:p-2.5 transition-all duration-300 ease-out hover:border-botanical-300 hover:shadow-lg hover:shadow-botanical-950/6 hover:-translate-y-0.5">
-      {/* 1. Compact Square Photo Container */}
+    <div className="group relative flex flex-col rounded-2xl bg-white border border-warm-200/80 p-2 sm:p-2.5 transition-all duration-300 ease-out hover:border-botanical-300 hover:shadow-lg hover:shadow-botanical-950/6 hover:-translate-y-0.5">
+      {/* 1. Square Photo Container with subtle inset outline */}
       <Link
         href={`/products/${product.handle}`}
-        className="relative aspect-square w-full rounded-xl overflow-hidden bg-gradient-to-b from-warm-100/60 to-warm-100 block"
+        className="relative aspect-square w-full rounded-xl overflow-hidden bg-gradient-to-b from-warm-100/60 to-warm-100 block ring-1 ring-black/5"
       >
         <Image
           src={imageSrc}
@@ -82,7 +82,9 @@ export function ProductCard({ product }: { product: StoreProduct }) {
               />
               <span>{difficultyLabel}</span>
             </span>
-          ) : <span />}
+          ) : (
+            <span />
+          )}
 
           {isPetSafe && (
             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50/95 backdrop-blur-xs text-emerald-800 border border-emerald-200/80 shadow-2xs">
@@ -95,7 +97,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
         {/* Small Variant Count Indicator */}
         {variantCount > 1 && (
           <div className="absolute bottom-2 left-2 pointer-events-none">
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-botanical-950/75 backdrop-blur-xs text-white shadow-2xs">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-botanical-950/80 backdrop-blur-xs text-white shadow-2xs">
               {variantCount} সাইজ
             </span>
           </div>
@@ -103,7 +105,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
       </Link>
 
       {/* 2. Content Body - Compact & Clean */}
-      <div className="pt-2 px-1 pb-0.5 flex-1 flex flex-col justify-between space-y-2">
+      <div className="pt-2.5 px-1 pb-0.5 flex-1 flex flex-col justify-between space-y-2">
         <div className="space-y-0.5">
           {plantCare?.scientificName && (
             <span className="text-[9px] uppercase font-mono tracking-wider text-botanical-500 block truncate">
@@ -118,19 +120,19 @@ export function ProductCard({ product }: { product: StoreProduct }) {
           </Link>
 
           {product.subtitle && (
-            <p className="text-[11px] text-warm-500 line-clamp-1 leading-normal font-normal">
+            <p className="text-[11px] text-botanical-600 line-clamp-1 leading-normal font-normal">
               {product.subtitle}
             </p>
           )}
         </div>
 
         {/* 3. Bottom Price & Action Button */}
-        <div className="pt-1.5 border-t border-warm-100 flex items-center justify-between gap-1.5">
+        <div className="pt-2 border-t border-warm-100 flex items-center justify-between gap-1.5">
           <div className="flex flex-col">
-            <span className="text-[9px] font-medium text-warm-400 uppercase tracking-wider leading-none mb-0.5">
+            <span className="text-[9px] font-medium text-botanical-500 uppercase tracking-wider leading-none mb-0.5">
               {priceDetails.hasMultiplePrices ? 'শুরু' : 'মূল্য'}
             </span>
-            <span className="text-xs sm:text-sm font-extrabold text-botanical-950 tracking-tight leading-none">
+            <span className="text-xs sm:text-sm font-extrabold text-botanical-950 tracking-tight leading-none tabular-nums">
               {priceDetails.hasMultiplePrices ? priceDetails.formattedRange : priceDetails.formatted}
             </span>
           </div>
@@ -144,13 +146,13 @@ export function ProductCard({ product }: { product: StoreProduct }) {
             className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs flex-shrink-0 ${
               added
                 ? 'bg-emerald-600 text-white shadow-emerald-600/30 scale-105'
-                : 'bg-botanical-900 hover:bg-botanical-800 text-white'
+                : 'bg-botanical-900 hover:bg-botanical-950 text-white'
             }`}
           >
             {added ? (
               <Check className="w-3.5 h-3.5 stroke-[2.5]" />
             ) : (
-              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             )}
           </button>
         </div>

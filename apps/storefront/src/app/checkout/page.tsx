@@ -602,17 +602,17 @@ export default function CheckoutPage() {
             <div className="space-y-2 border-t border-warm-100 pt-4 text-xs">
               <div className="flex justify-between text-warm-600">
                 <span>উপমোট (Subtotal):</span>
-                <span className="font-semibold text-botanical-900">{formatBDT(subtotal)}</span>
+                <span className="font-semibold text-botanical-900 tabular-nums">{formatBDT(subtotal)}</span>
               </div>
               <div className="flex justify-between text-warm-600">
                 <span>
                   ডেলিভারি ফি ({deliveryZone === 'inside_dhaka' ? 'ঢাকা' : 'ঢাকার বাইরে'}):
                 </span>
-                <span className="font-semibold text-emerald-700">{formatBDT(shippingFee)}</span>
+                <span className="font-semibold text-emerald-700 tabular-nums">{formatBDT(shippingFee)}</span>
               </div>
               <div className="flex justify-between text-base font-extrabold text-botanical-950 border-t border-warm-200 pt-3">
                 <span>সর্বমোট (Total COD):</span>
-                <span className="text-emerald-800">{formatBDT(total)}</span>
+                <span className="text-emerald-800 tabular-nums">{formatBDT(total)}</span>
               </div>
             </div>
 
@@ -623,7 +623,7 @@ export default function CheckoutPage() {
               className={`w-full py-4 rounded-2xl text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 ${
                 isSubmitting || !phoneConsent
                   ? 'bg-warm-400 cursor-not-allowed'
-                  : 'bg-botanical-700 hover:bg-botanical-800 active:scale-98'
+                  : 'bg-botanical-900 hover:bg-botanical-950 active:scale-96 shadow-sm hover:shadow'
               }`}
             >
               {isSubmitting ? (

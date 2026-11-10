@@ -8,20 +8,15 @@ import {
   ArrowRight,
   Sun,
   Droplets,
-  HeartHandshake,
-  CheckCircle,
+  CheckCircle2,
   Package,
-  Clock,
-  Sparkles,
   Star,
   Award,
   Leaf,
   RefreshCw,
   Compass,
-  Check,
   Building,
   Wind,
-  ShieldAlert,
 } from 'lucide-react'
 import { getStoreProducts, getStoreCategories } from '@/lib/medusa'
 import { ProductCard } from '@/components/ProductCard'
@@ -30,6 +25,21 @@ import { getWhatsAppSupportLink } from '@/lib/utils'
 import { NURSERY_CONTACT } from '@/lib/bangladesh-data'
 
 export const revalidate = 60
+
+function getCategoryIcon(handle: string) {
+  switch (handle) {
+    case 'indoor-plants':
+      return Leaf
+    case 'balcony-outdoor':
+      return Sun
+    case 'low-light-succulents':
+      return Droplets
+    case 'pots-plant-care':
+      return Package
+    default:
+      return Sprout
+  }
+}
 
 export default async function HomePage() {
   const [products, categories] = await Promise.all([
@@ -43,9 +53,9 @@ export default async function HomePage() {
   )
 
   return (
-    <div className="flex-1 flex flex-col space-y-16 sm:space-y-24">
-      {/* 1. Hero Section */}
-      <section className="relative overflow-hidden min-h-[460px] sm:min-h-[520px] lg:min-h-[560px] flex items-center border-b border-warm-200/50">
+    <div className="flex-1 flex flex-col space-y-16 sm:space-y-24 pb-16">
+      {/* 1. Hero Section with High-End Botanical Gradient Scrim */}
+      <section className="relative overflow-hidden min-h-[480px] sm:min-h-[540px] lg:min-h-[580px] flex items-center border-b border-warm-200/70 bg-warm-100">
         <div className="absolute inset-0 z-0">
           <Image
             src="/images/hero-bg.webp"
@@ -53,56 +63,64 @@ export default async function HomePage() {
             fill
             priority
             quality={95}
-            className="object-cover object-[72%_center] sm:object-center"
+            className="object-cover object-[75%_center] sm:object-center"
           />
+          {/* Subtle multi-stop gradient scrim: ensures 100% crisp text readability while showcasing lush background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-warm-50 via-warm-50/95 to-warm-50/20 sm:via-warm-50/90 sm:to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-warm-50/80 via-transparent to-transparent sm:hidden" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-10 sm:py-14 lg:py-16">
-          <div className="max-w-md lg:max-w-lg space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-botanical-900/5 text-botanical-900 text-[11px] font-semibold border border-botanical-900/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 sm:py-16 lg:py-20">
+          <div className="max-w-md lg:max-w-xl space-y-5">
+            {/* Nursery Origin Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 text-botanical-950 text-xs font-semibold border border-warm-200/90 shadow-2xs backdrop-blur-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse flex-shrink-0" />
               <span>ঢাকা নার্সারি থেকে সরাসরি আপনার ঘরে</span>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-botanical-950 tracking-tight leading-[1.2]">
+            {/* Main Headline */}
+            <h1 className="text-3xl sm:text-5xl lg:text-[50px] font-black text-botanical-950 tracking-tight leading-[1.15]">
               সবুজে সাজুক <br className="hidden sm:inline" />
               আপনার ঘর ও মন
             </h1>
 
-            <p className="text-xs sm:text-sm text-botanical-900/85 font-medium leading-relaxed max-w-sm sm:max-w-md">
-              বাংলাদেশের প্রিমিয়াম অনলাইন নার্সারি। বাতাস পরিশোধনকারী ইনডোর প্ল্যান্টস, ব্যালকনি গাছ এবং প্রতিটি গাছের সাথে শতভাগ সঠিক যত্ন নির্দেশিকা।
+            {/* Subtitle */}
+            <p className="text-xs sm:text-sm lg:text-base text-botanical-800 font-medium leading-relaxed max-w-sm sm:max-w-md">
+              বাংলাদেশের প্রিমিয়াম অনলাইন নার্সারি। বাতাস পরিশোধনকারী ইনডোর ও ব্যালকনি গাছ এবং প্রতিটি অর্ডারের সাথে শতভাগ সঠিক যত্ন নির্দেশিকা।
             </p>
 
+            {/* Action Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link
                 href="/shop"
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-botanical-800 hover:bg-botanical-900 text-white font-semibold text-xs transition active:scale-98 shadow-xs"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-botanical-900 hover:bg-botanical-950 text-white font-bold text-xs sm:text-sm transition-all duration-200 active:scale-96 shadow-sm hover:shadow"
               >
                 <span>গাছ দেখুন (Shop Plants)</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4" />
               </Link>
               <a
                 href={whatsAppLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-white/90 hover:bg-white text-botanical-900 font-semibold text-xs border border-botanical-900/10 transition shadow-2xs"
+                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white hover:bg-warm-100 text-botanical-950 font-bold text-xs sm:text-sm border border-warm-300 transition-all duration-200 active:scale-96 shadow-2xs"
               >
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                <MessageCircle className="w-4 h-4 text-emerald-600" />
                 <span>হোয়াটসঅ্যাপে পরামর্শ</span>
               </a>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-botanical-900/10 text-[11px] sm:text-xs text-botanical-900 font-semibold">
+            {/* Trust Micro-Badges */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-3 border-t border-botanical-900/10 text-xs text-botanical-900 font-semibold">
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                 <span>ক্যাশ অন ডেলিভারি (COD)</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                 <span>ঢাকা ৬০৳ ডেলিভারি</span>
               </div>
               <div className="flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 text-emerald-700 flex-shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 flex-shrink-0" />
                 <span>১০০% সতেজ গাছ</span>
               </div>
             </div>
@@ -111,45 +129,45 @@ export default async function HomePage() {
       </section>
 
       {/* 2. Key Assurance & Trust Badges Strip */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 shadow-sm">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 shadow-md shadow-warm-900/5">
           <div className="flex items-center gap-3 p-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center flex-shrink-0 border border-emerald-100">
               <Truck className="w-5 h-5" />
             </div>
             <div>
               <h4 className="font-bold text-xs sm:text-sm text-botanical-950">ঢাকা ৬০৳ ও সারা দেশে ১৩০৳</h4>
-              <p className="text-[11px] text-botanical-600">নিরাপদ কুরিয়ার ও নিজস্ব ডেলিভারি</p>
+              <p className="text-[11px] text-botanical-600 mt-0.5">নিরাপদ কুরিয়ার ও নিজস্ব ডেলিভারি</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-2">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center flex-shrink-0 border border-amber-100">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
               <h4 className="font-bold text-xs sm:text-sm text-botanical-950">১০০% ক্যাশ অন ডেলিভারি</h4>
-              <p className="text-[11px] text-botanical-600">গাছ দেখে বুঝে মূল্য পরিশোধ করুন</p>
+              <p className="text-[11px] text-botanical-600 mt-0.5">গাছ দেখে বুঝে মূল্য পরিশোধ করুন</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-2">
-            <div className="w-10 h-10 rounded-xl bg-botanical-50 text-botanical-800 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-botanical-50 text-botanical-800 flex items-center justify-center flex-shrink-0 border border-botanical-100">
               <Leaf className="w-5 h-5" />
             </div>
             <div>
               <h4 className="font-bold text-xs sm:text-sm text-botanical-950">সতেজ নার্সারি সিলেকশন</h4>
-              <p className="text-[11px] text-botanical-600">সুস্থ মূল ও পোক্ত শাখা নিশ্চয়তা</p>
+              <p className="text-[11px] text-botanical-600 mt-0.5">সুস্থ মূল ও পোক্ত শাখা নিশ্চয়তা</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-2">
-            <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-800 flex items-center justify-center flex-shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-sky-50 text-sky-800 flex items-center justify-center flex-shrink-0 border border-sky-100">
               <MessageCircle className="w-5 h-5" />
             </div>
             <div>
               <h4 className="font-bold text-xs sm:text-sm text-botanical-950">ফ্রি কেয়ার কনসাল্টেশন</h4>
-              <p className="text-[11px] text-botanical-600">আজীবন হোয়াটসঅ্যাপ সহায়তা</p>
+              <p className="text-[11px] text-botanical-600 mt-0.5">আজীবন হোয়াটসঅ্যাপ সহায়তা</p>
             </div>
           </div>
         </div>
@@ -158,42 +176,45 @@ export default async function HomePage() {
       {/* 3. Shop by Category */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-2">
+          <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-1.5">
             ক্যাটাগরি সমূহ
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-botanical-900 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-botanical-950 tracking-tight">
             আপনার ঘরের জন্য সঠিক গাছ বেছে নিন
           </h2>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-          {categories.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/categories/${cat.handle}`}
-              className="group p-5 rounded-2xl bg-white border border-warm-200 hover:border-botanical-400 hover:shadow-md transition-all duration-200 flex flex-col items-center text-center space-y-3"
-            >
-              <div className="w-14 h-14 rounded-2xl bg-botanical-50 text-botanical-700 flex items-center justify-center group-hover:bg-botanical-100 group-hover:scale-105 transition-all">
-                <Sprout className="w-7 h-7" />
-              </div>
-              <div>
-                <h3 className="font-bold text-base text-botanical-900 group-hover:text-botanical-700 transition">
-                  {cat.name}
-                </h3>
-                {cat.description && (
-                  <p className="text-xs text-botanical-600 line-clamp-2 mt-1">
-                    {cat.description}
-                  </p>
-                )}
-              </div>
-            </Link>
-          ))}
+          {categories.map((cat) => {
+            const Icon = getCategoryIcon(cat.handle)
+            return (
+              <Link
+                key={cat.id}
+                href={`/categories/${cat.handle}`}
+                className="group p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 hover:border-botanical-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 flex flex-col items-center text-center space-y-3"
+              >
+                <div className="w-14 h-14 rounded-2xl bg-botanical-50 text-botanical-800 flex items-center justify-center group-hover:bg-botanical-100 group-hover:scale-108 transition-all duration-300 border border-botanical-100">
+                  <Icon className="w-7 h-7" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-botanical-950 group-hover:text-botanical-700 transition">
+                    {cat.name}
+                  </h3>
+                  {cat.description && (
+                    <p className="text-xs text-botanical-600 line-clamp-2 mt-1 leading-normal">
+                      {cat.description}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </section>
 
-      {/* 4. Lifestyle Plant Finder Cards (নতুন সেকশন) */}
+      {/* 4. Lifestyle Plant Finder Cards */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-gradient-to-b from-warm-100 to-warm-50 border border-warm-200/80 p-6 sm:p-10">
+        <div className="rounded-3xl bg-gradient-to-b from-warm-100/70 to-warm-50 border border-warm-200/90 p-6 sm:p-10">
           <div className="max-w-2xl mb-8">
             <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-1">
               উদ্দেশ্য ও লাইফস্টাইল
@@ -208,11 +229,11 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link
-              href="/shop"
-              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-sm transition flex flex-col justify-between"
+              href="/categories/low-light-succulents"
+              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-800 flex items-center justify-center border border-amber-100">
                   <Sun className="w-5 h-5" />
                 </div>
                 <div>
@@ -231,11 +252,11 @@ export default async function HomePage() {
             </Link>
 
             <Link
-              href="/shop"
-              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-sm transition flex flex-col justify-between"
+              href="/categories/indoor-plants"
+              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-800 flex items-center justify-center border border-sky-100">
                   <Wind className="w-5 h-5" />
                 </div>
                 <div>
@@ -254,11 +275,11 @@ export default async function HomePage() {
             </Link>
 
             <Link
-              href="/shop"
-              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-sm transition flex flex-col justify-between"
+              href="/categories/indoor-plants"
+              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-100">
                   <Building className="w-5 h-5" />
                 </div>
                 <div>
@@ -278,10 +299,10 @@ export default async function HomePage() {
 
             <Link
               href="/shop"
-              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-sm transition flex flex-col justify-between"
+              className="group p-5 rounded-2xl bg-white border border-warm-200/80 hover:border-botanical-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
             >
               <div className="space-y-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-800 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-800 flex items-center justify-center border border-purple-100">
                   <Sprout className="w-5 h-5" />
                 </div>
                 <div>
@@ -304,28 +325,28 @@ export default async function HomePage() {
 
       {/* 5. Featured Plants (Live Medusa Data) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-10">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
           <div>
             <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-1">
               সরাসরি নার্সারি থেকে
             </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-botanical-900 tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-botanical-950 tracking-tight">
               জনপ্রিয় ইনডোর ও ব্যালকনি গাছ
             </h2>
           </div>
           <Link
             href="/shop"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-botanical-700 hover:text-botanical-900 transition"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-botanical-800 hover:text-botanical-950 transition px-3.5 py-1.5 rounded-full bg-white border border-warm-200 shadow-2xs hover:border-warm-300"
           >
             <span>সব গাছ দেখুন ({products.length})</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {products.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-2xl border border-warm-200 p-8">
+          <div className="text-center py-16 bg-white rounded-3xl border border-warm-200 p-8">
             <Sprout className="w-12 h-12 text-warm-400 mx-auto mb-3" />
-            <p className="text-sm text-botanical-700">বর্তমানে কোনো পণ্য পাওয়া যায়নি।</p>
+            <p className="text-sm font-semibold text-botanical-800">বর্তমানে কোনো পণ্য পাওয়া যায়নি।</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
@@ -339,7 +360,7 @@ export default async function HomePage() {
       {/* 6. Why Green Dreams (কেন গ্রিন ড্রিমস সেরা — ৪টি প্রতিশ্রুতি) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-2">
+          <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-1.5">
             আমাদের বৈশিষ্ট্য
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold text-botanical-950 tracking-tight">
@@ -351,8 +372,8 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div className="p-6 rounded-2xl bg-white border border-warm-200/90 shadow-xs space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center">
+          <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-100">
               <Award className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-base text-botanical-950">সুস্থ শিকড়ের নিশ্চয়তা</h3>
@@ -361,8 +382,8 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-warm-200/90 shadow-xs space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center">
+          <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center border border-amber-100">
               <Package className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-base text-botanical-950">ম্যাস-ফ্রি নিরাপদ প্যাকেজিং</h3>
@@ -371,8 +392,8 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-warm-200/90 shadow-xs space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-800 flex items-center justify-center">
+          <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-sky-50 text-sky-800 flex items-center justify-center border border-sky-100">
               <RefreshCw className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-base text-botanical-950">৪৮ ঘণ্টার রিপ্লেসমেন্ট</h3>
@@ -381,8 +402,8 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white border border-warm-200/90 shadow-xs space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-botanical-50 text-botanical-800 flex items-center justify-center">
+          <div className="p-6 rounded-2xl sm:rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-botanical-50 text-botanical-800 flex items-center justify-center border border-botanical-100">
               <Compass className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-base text-botanical-950">বাংলায় কেয়ার নির্দেশিকা</h3>
@@ -395,7 +416,7 @@ export default async function HomePage() {
 
       {/* 7. How It Works (সহজ ৪টি ধাপে ডেলিভারি) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl bg-botanical-950 text-white p-6 sm:p-12 overflow-hidden">
+        <div className="rounded-3xl bg-botanical-950 text-white p-6 sm:p-12 overflow-hidden shadow-xl">
           <div className="text-center max-w-xl mx-auto mb-10">
             <span className="text-xs uppercase tracking-widest font-extrabold text-emerald-400 block mb-2">
               সহজ প্রক্রিয়া
@@ -405,8 +426,8 @@ export default async function HomePage() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-            <div className="space-y-3 p-4 rounded-2xl bg-botanical-900/60 border border-botanical-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 relative">
+            <div className="space-y-3 p-5 rounded-2xl bg-botanical-900/70 border border-botanical-800/80 hover:border-emerald-500/40 transition">
               <span className="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs font-black">
                 ০১
               </span>
@@ -416,7 +437,7 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="space-y-3 p-4 rounded-2xl bg-botanical-900/60 border border-botanical-800">
+            <div className="space-y-3 p-5 rounded-2xl bg-botanical-900/70 border border-botanical-800/80 hover:border-emerald-500/40 transition">
               <span className="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs font-black">
                 ০২
               </span>
@@ -426,7 +447,7 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="space-y-3 p-4 rounded-2xl bg-botanical-900/60 border border-botanical-800">
+            <div className="space-y-3 p-5 rounded-2xl bg-botanical-900/70 border border-botanical-800/80 hover:border-emerald-500/40 transition">
               <span className="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs font-black">
                 ০৩
               </span>
@@ -436,7 +457,7 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="space-y-3 p-4 rounded-2xl bg-botanical-900/60 border border-botanical-800">
+            <div className="space-y-3 p-5 rounded-2xl bg-botanical-900/70 border border-botanical-800/80 hover:border-emerald-500/40 transition">
               <span className="w-8 h-8 rounded-full bg-emerald-600/30 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-xs font-black">
                 ০৪
               </span>
@@ -449,10 +470,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 8. Customer Reviews & Social Proof (বাস্তব গ্রাহকদের রিভিউ) */}
+      {/* 8. Customer Reviews & Social Proof */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold mb-3 shadow-2xs">
             <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             <span>৪.৯ / ৫.০ রেটিং (১,২০০+ সফল ডেলিভারি)</span>
           </div>
@@ -465,7 +486,7 @@ export default async function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-3xl bg-white border border-warm-200/90 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="p-6 rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
@@ -487,7 +508,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-warm-200/90 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="p-6 rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
@@ -509,7 +530,7 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white border border-warm-200/90 shadow-xs flex flex-col justify-between space-y-4">
+          <div className="p-6 rounded-3xl bg-white border border-warm-200/90 shadow-2xs hover:shadow-md transition-all duration-300 flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
@@ -533,7 +554,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 9. Interactive FAQ Accordion (সাধারণ জিজ্ঞাসা) */}
+      {/* 9. Interactive FAQ Accordion */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="text-center mb-8">
           <span className="text-xs uppercase tracking-widest font-extrabold text-botanical-600 block mb-1">
@@ -552,7 +573,7 @@ export default async function HomePage() {
         <div className="rounded-3xl bg-botanical-900 text-white p-8 sm:p-14 overflow-hidden relative shadow-xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
-              <span className="text-xs uppercase tracking-widest font-bold text-botanical-300">
+              <span className="text-xs uppercase tracking-widest font-bold text-emerald-400">
                 গ্রিন ড্রিমস স্পেশাল
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
@@ -580,7 +601,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="bg-botanical-800/80 rounded-2xl p-6 sm:p-8 border border-botanical-700/80 space-y-4">
+            <div className="bg-botanical-800/80 rounded-2xl p-6 sm:p-8 border border-botanical-700/80 space-y-4 shadow-lg">
               <h3 className="font-extrabold text-lg text-white">ডেলিভারি ও ক্যাশ অন ডেলিভারি সুবিধা</h3>
               <ul className="space-y-3 text-sm text-botanical-200">
                 <li className="flex items-start gap-2.5">
@@ -599,7 +620,7 @@ export default async function HomePage() {
               <div className="pt-2">
                 <Link
                   href="/shop"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-botanical-900 font-bold text-sm hover:bg-warm-100 transition"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-white text-botanical-900 font-bold text-sm hover:bg-warm-100 transition active:scale-96 shadow-md"
                 >
                   এখনই গাছ অর্ডার করুন
                 </Link>
