@@ -11,6 +11,7 @@ import {
   HelpCircle,
 } from 'lucide-react'
 import { getWhatsAppSupportLink } from '@/lib/utils'
+import { NURSERY_CONTACT } from '@/lib/bangladesh-data'
 
 export const metadata = {
   title: 'যোগাযোগ ও নার্সারি — Green Dreams',
@@ -19,7 +20,7 @@ export const metadata = {
 
 export default function ContactPage() {
   const whatsAppLink = getWhatsAppSupportLink(
-    '8801700000000',
+    NURSERY_CONTACT.phoneRaw,
     'Hello Green Dreams, I would like to visit the nursery / ask about a plant inquiry.'
   )
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react'
@@ -10,35 +10,53 @@ import { formatBDT } from '@/lib/utils'
 export function CartDrawer() {
   const { cart, isDrawerOpen, setIsDrawerOpen, updateQuantity, removeItem, itemCount } = useCart()
 
+  // Accessibility: Close drawer on Escape key press
+  useEffect(() => {
+    if (!isDrawerOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsDrawerOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isDrawerOpen, setIsDrawerOpen])
+
   if (!isDrawerOpen) return null
 
   const items = cart?.items || []
   const subtotal = items.reduce((acc, item) => acc + item.unit_price * item.quantity, 0)
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 overflow-hidden" role="presentation">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-botanical-950/40 backdrop-blur-xs transition-opacity duration-300"
         onClick={() => setIsDrawerOpen(false)}
+        aria-hidden="true"
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-l border-warm-200/90 animate-in slide-in-from-right duration-300">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cart-drawer-heading"
+          className="w-screen max-w-md bg-white shadow-2xl flex flex-col border-l border-warm-200/90 animate-in slide-in-from-right duration-300"
+        >
           {/* Header */}
           <div className="px-6 py-4 border-b border-warm-200/80 flex items-center justify-between bg-warm-50/70">
             <div className="flex items-center space-x-2.5">
               <div className="w-8 h-8 rounded-lg bg-botanical-100 text-botanical-800 flex items-center justify-center">
                 <ShoppingBag className="w-4 h-4" />
               </div>
-              <h2 className="font-extrabold text-base text-botanical-950">
+              <h2 id="cart-drawer-heading" className="font-extrabold text-base text-botanical-950">
                 আপনার শপিং ব্যাগ ({itemCount})
               </h2>
             </div>
             <button
               onClick={() => setIsDrawerOpen(false)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-warm-500 hover:text-botanical-950 hover:bg-warm-100 transition active:scale-90"
-              aria-label="বন্ধ করুন"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-warm-600 hover:text-botanical-950 hover:bg-warm-100 transition active:scale-90"
+              aria-label="কার্ট বন্ধ করুন"
             >
               <X className="w-5 h-5" />
             </button>
@@ -55,12 +73,13 @@ export function CartDrawer() {
                 <p className="text-xs text-botanical-600 mt-1 max-w-xs leading-relaxed">
                   আপনার পছন্দের ইনডোর বা আউটডোর গাছগুলো ব্যাগে যোগ করুন।
                 </p>
-                <button
+                <Link
+                  href="/shop"
                   onClick={() => setIsDrawerOpen(false)}
                   className="mt-6 inline-flex items-center px-6 py-2.5 rounded-xl bg-botanical-900 text-white text-xs font-bold hover:bg-botanical-950 transition shadow-sm active:scale-96"
                 >
-                  <Link href="/shop">গাছ ব্রাউজ করুন</Link>
-                </button>
+                  গাছ ব্রাউজ করুন
+                </Link>
               </div>
             ) : (
               items.map((item) => (
@@ -97,8 +116,8 @@ export function CartDrawer() {
                       <div className="inline-flex items-center rounded-lg border border-warm-200 bg-warm-50 p-0.5 shadow-2xs">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 hover:bg-white rounded-md text-botanical-800 transition active:scale-90"
-                          aria-label="কমান"
+                          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-white rounded-md text-botanical-800 transition active:scale-90"
+                          aria-label="পরিমাণ কমান"
                         >
                           <Minus className="w-3.5 h-3.5" />
                         </button>
@@ -107,8 +126,8 @@ export function CartDrawer() {
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 hover:bg-white rounded-md text-botanical-800 transition active:scale-90"
-                          aria-label="বাড়ান"
+                          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-white rounded-md text-botanical-800 transition active:scale-90"
+                          aria-label="পরিমাণ বাড়ান"
                         >
                           <Plus className="w-3.5 h-3.5" />
                         </button>
@@ -116,8 +135,8 @@ export function CartDrawer() {
 
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="p-1.5 text-warm-400 hover:text-rose-600 transition ml-auto rounded-lg hover:bg-warm-100"
-                        aria-label="মুছে ফেলুন"
+                        className="w-8 h-8 flex items-center justify-center text-warm-600 hover:text-rose-600 transition ml-auto rounded-lg hover:bg-rose-50 active:scale-90"
+                        aria-label="আইটেমটি মুছে ফেলুন"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

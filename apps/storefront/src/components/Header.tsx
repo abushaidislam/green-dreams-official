@@ -118,8 +118,10 @@ export function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-botanical-900 hover:bg-warm-100 border border-warm-200/60 active:scale-96"
-            aria-label="মেনু"
+            className="md:hidden min-w-[44px] min-h-[44px] p-2.5 rounded-xl text-botanical-900 hover:bg-warm-100 border border-warm-200/60 active:scale-96 flex items-center justify-center"
+            aria-label={mobileMenuOpen ? 'মেনু বন্ধ করুন' : 'মেনু খুলুন'}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
@@ -128,7 +130,7 @@ export function Header() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-warm-200/80 bg-warm-50/98 backdrop-blur-lg px-4 pt-3 pb-6 space-y-2.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
+        <div id="mobile-navigation" className="md:hidden border-t border-warm-200/80 bg-warm-50/98 backdrop-blur-lg px-4 pt-3 pb-6 space-y-2.5 shadow-lg animate-in slide-in-from-top-2 duration-200">
           <Link
             href="/shop"
             onClick={() => setMobileMenuOpen(false)}

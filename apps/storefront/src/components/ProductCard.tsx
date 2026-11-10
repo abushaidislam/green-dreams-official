@@ -70,7 +70,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
         {/* Floating Minimal Badges */}
         <div className="absolute top-2 left-2 right-2 flex items-center justify-between pointer-events-none">
           {difficultyLabel ? (
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/95 backdrop-blur-xs text-botanical-900 border border-white/80 shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-white/95 backdrop-blur-xs text-botanical-900 border border-white/80 shadow-2xs">
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
                   plantCare?.difficulty === 'easy'
@@ -87,7 +87,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
           )}
 
           {isPetSafe && (
-            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50/95 backdrop-blur-xs text-emerald-800 border border-emerald-200/80 shadow-2xs">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50/95 backdrop-blur-xs text-emerald-800 border border-emerald-200/80 shadow-2xs">
               <span>🐾</span>
               <span>সেফ</span>
             </span>
@@ -97,8 +97,8 @@ export function ProductCard({ product }: { product: StoreProduct }) {
         {/* Small Variant Count Indicator */}
         {variantCount > 1 && (
           <div className="absolute bottom-2 left-2 pointer-events-none">
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-botanical-950/80 backdrop-blur-xs text-white shadow-2xs">
-              {variantCount} সাইজ
+            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-medium bg-botanical-950/85 backdrop-blur-xs text-white shadow-2xs">
+              {variantCount} অপশন
             </span>
           </div>
         )}
@@ -108,7 +108,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
       <div className="pt-2.5 px-1 pb-0.5 flex-1 flex flex-col justify-between space-y-2">
         <div className="space-y-0.5">
           {plantCare?.scientificName && (
-            <span className="text-[9px] uppercase font-mono tracking-wider text-botanical-500 block truncate">
+            <span className="text-[10px] sm:text-[11px] uppercase font-mono tracking-wider text-botanical-600 block truncate">
               {plantCare.scientificName}
             </span>
           )}
@@ -120,7 +120,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
           </Link>
 
           {product.subtitle && (
-            <p className="text-[11px] text-botanical-600 line-clamp-1 leading-normal font-normal">
+            <p className="text-[11px] text-botanical-700 line-clamp-1 leading-normal font-normal">
               {product.subtitle}
             </p>
           )}
@@ -129,7 +129,7 @@ export function ProductCard({ product }: { product: StoreProduct }) {
         {/* 3. Bottom Price & Action Button */}
         <div className="pt-2 border-t border-warm-100 flex items-center justify-between gap-1.5">
           <div className="flex flex-col">
-            <span className="text-[9px] font-medium text-botanical-500 uppercase tracking-wider leading-none mb-0.5">
+            <span className="text-[10px] font-medium text-botanical-600 uppercase tracking-wider leading-none mb-0.5">
               {priceDetails.hasMultiplePrices ? 'শুরু' : 'মূল্য'}
             </span>
             <span className="text-xs sm:text-sm font-extrabold text-botanical-950 tracking-tight leading-none tabular-nums">
@@ -137,22 +137,22 @@ export function ProductCard({ product }: { product: StoreProduct }) {
             </span>
           </div>
 
-          {/* Minimal Tactile Action Button */}
+          {/* Minimal Tactile Action Button with Expanded Tap Target */}
           <button
             onClick={handleQuickAdd}
             disabled={isLoading || !defaultVariant?.id}
-            aria-label="কার্টে যোগ করুন"
+            aria-label={`${cleanTitle} কার্টে যোগ করুন`}
             title="কার্টে যোগ করুন"
-            className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs flex-shrink-0 ${
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-2xs flex-shrink-0 ${
               added
                 ? 'bg-emerald-600 text-white shadow-emerald-600/30 scale-105'
                 : 'bg-botanical-900 hover:bg-botanical-950 text-white'
             }`}
           >
             {added ? (
-              <Check className="w-3.5 h-3.5 stroke-[2.5]" />
+              <Check className="w-4 h-4 stroke-[2.5]" />
             ) : (
-              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <Plus className="w-4 h-4 stroke-[2.5]" />
             )}
           </button>
         </div>

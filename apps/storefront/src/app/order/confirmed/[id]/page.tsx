@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { BACKEND_URL, PUBLISHABLE_KEY } from '@/lib/medusa'
 import { formatBDT, getWhatsAppSupportLink } from '@/lib/utils'
+import { NURSERY_CONTACT } from '@/lib/bangladesh-data'
 
 export const revalidate = 0
 
@@ -45,7 +46,7 @@ export default async function OrderConfirmedPage({
   const order = await getOrderDetails(id)
 
   const whatsAppLink = getWhatsAppSupportLink(
-    '8801700000000',
+    NURSERY_CONTACT.phoneRaw,
     `Hello Green Dreams, I placed an order with Order ID: ${id}. Could you confirm my delivery schedule?`
   )
 
@@ -90,7 +91,7 @@ export default async function OrderConfirmedPage({
           </div>
 
           <div className="text-left sm:text-right space-y-0.5">
-            <span className="text-xs text-warm-500 block">সর্বমোট প্রদেয় মূল্য</span>
+            <span className="text-xs text-warm-700 font-medium block">সর্বমোট প্রদেয় মূল্য</span>
             <span className="text-2xl font-black text-botanical-950 block">
               {formatBDT(order?.total || 0)}
             </span>
@@ -123,7 +124,7 @@ export default async function OrderConfirmedPage({
             <p className="text-botanical-700 pl-6">
               {order?.shipping_address?.phone || 'রেকর্ড করা হয়নি'}
             </p>
-            <p className="text-xs text-warm-500 pl-6 pt-1">
+            <p className="text-xs text-warm-700 font-medium pl-6 pt-1">
               ডেলিভারি রাইডার কল করে আপনার উপস্থিতিতে গাছ ডেলিভারি করবেন।
             </p>
           </div>

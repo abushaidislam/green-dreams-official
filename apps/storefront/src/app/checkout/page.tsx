@@ -25,6 +25,7 @@ import {
   validateBDAddress,
   DHAKA_CITY_AREAS,
   ALL_BANGLADESH_DISTRICTS,
+  BANGLADESH_DISTRICTS_BY_DIVISION,
   DELIVERY_ZONES,
   NURSERY_CONTACT,
 } from '@/lib/bangladesh-data'
@@ -102,9 +103,16 @@ export default function CheckoutPage() {
     e.preventDefault()
     setFormError(null)
 
+    const scrollToTop = () => {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 120, behavior: 'smooth' })
+      }
+    }
+
     // Name Validation
     if (!firstName.trim()) {
       setFormError('দয়া করে আপনার নাম প্রদান করুন')
+      scrollToTop()
       return
     }
 
@@ -112,6 +120,7 @@ export default function CheckoutPage() {
     const phoneValidation = validateBDPhoneDetailed(phone)
     if (!phoneValidation.isValid) {
       setPhoneError(phoneValidation.error || 'সঠিক বাংলাদেশি ফোন নম্বর দিন')
+      scrollToTop()
       return
     }
 
@@ -120,16 +129,19 @@ export default function CheckoutPage() {
     const addrValidation = validateBDAddress(address1, effectiveCity)
     if (!addrValidation.isValid) {
       setFormError(addrValidation.error || 'সঠিক সম্পূর্ণ ঠিকানা দিন')
+      scrollToTop()
       return
     }
 
     if (!phoneConsent) {
       setFormError('ডেলিভারির পূর্বে ফোন ভেরিফিকেশনের শর্তটিতে সম্মত হতে হবে।')
+      scrollToTop()
       return
     }
 
     if (!cart?.id || items.length === 0) {
       setFormError('আপনার কার্ট খালি। প্রথমে গাছ ব্যাগে যোগ করুন।')
+      scrollToTop()
       return
     }
 
@@ -302,9 +314,13 @@ export default function CheckoutPage() {
         <div className="lg:col-span-7 space-y-8">
           {/* Error Banner */}
           {formError && (
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3 animate-in fade-in duration-200"
+            >
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-rose-600" />
-              <span>{formError}</span>
+              <span className="font-medium">{formError}</span>
             </div>
           )}
 
@@ -312,15 +328,16 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-3xl border border-warm-200 p-6 sm:p-8 space-y-5 shadow-xs">
             <h2 className="text-lg font-bold text-botanical-900 border-b border-warm-100 pb-3 flex items-center justify-between">
               <span>১. আপনার যোগাযোগের তথ্য</span>
-              <span className="text-xs font-normal text-warm-500">* চিহ্নিত ঘরগুলো আবশ্যক</span>
+              <span className="text-xs font-normal text-warm-700">* চিহ্নিত ঘরগুলো আবশ্যক</span>
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+                <label htmlFor="checkout-first-name" className="block text-xs font-bold text-botanical-800 mb-1.5">
                   নাম (First Name) *
                 </label>
                 <input
+                  id="checkout-first-name"
                   type="text"
                   required
                   value={firstName}
@@ -331,10 +348,11 @@ export default function CheckoutPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+                <label htmlFor="checkout-last-name" className="block text-xs font-bold text-botanical-800 mb-1.5">
                   পদবি (Last Name)
                 </label>
                 <input
+                  id="checkout-last-name"
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
@@ -346,7 +364,7 @@ export default function CheckoutPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-botanical-800">
+                <label htmlFor="checkout-phone" className="text-xs font-bold text-botanical-800">
                   বাংলাদেশি মোবাইল নম্বর *
                 </label>
                 {detectedOperator && (
@@ -356,10 +374,13 @@ export default function CheckoutPage() {
                 )}
               </div>
               <input
+                id="checkout-phone"
                 type="tel"
                 required
                 value={phone}
                 onChange={handlePhoneChange}
+                aria-invalid={!!phoneError}
+                aria-describedby={phoneError ? 'phone-error' : 'phone-desc'}
                 placeholder="017XXXXXXXX বা 018XXXXXXXX"
                 className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 ${
                   phoneError
@@ -368,22 +389,23 @@ export default function CheckoutPage() {
                 }`}
               />
               {phoneError ? (
-                <p className="text-xs text-rose-600 mt-1 flex items-center gap-1">
+                <p id="phone-error" className="text-xs text-rose-600 mt-1 flex items-center gap-1 font-medium">
                   <AlertCircle className="w-3.5 h-3.5" />
                   <span>{phoneError}</span>
                 </p>
               ) : (
-                <p className="text-[11px] text-warm-500 mt-1">
+                <p id="phone-desc" className="text-xs text-warm-700 mt-1">
                   ডেলিভারির পূর্বে এই নম্বরে কল করে নিশ্চিত করা হবে। (GP, Banglalink, Robi, Airtel, Teletalk)
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+              <label htmlFor="checkout-email" className="block text-xs font-bold text-botanical-800 mb-1.5">
                 ইমেইল ঠিকানা (ঐচ্ছিক)
               </label>
               <input
+                id="checkout-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -422,7 +444,7 @@ export default function CheckoutPage() {
                     <span className="text-xs text-botanical-700 block mt-0.5">
                       চার্জ: <strong>৳{DELIVERY_ZONES.INSIDE_DHAKA.fee}</strong> | সময়: {DELIVERY_ZONES.INSIDE_DHAKA.etaDays}
                     </span>
-                    <span className="text-[11px] text-warm-500 block mt-1">
+                    <span className="text-xs text-warm-700 block mt-1">
                       {DELIVERY_ZONES.INSIDE_DHAKA.packagingBn}
                     </span>
                   </div>
@@ -445,7 +467,7 @@ export default function CheckoutPage() {
                     <span className="text-xs text-botanical-700 block mt-0.5">
                       চার্জ: <strong>৳{DELIVERY_ZONES.OUTSIDE_DHAKA.fee}</strong> | সময়: {DELIVERY_ZONES.OUTSIDE_DHAKA.etaDays}
                     </span>
-                    <span className="text-[11px] text-warm-500 block mt-1">
+                    <span className="text-xs text-warm-700 block mt-1">
                       {DELIVERY_ZONES.OUTSIDE_DHAKA.packagingBn}
                     </span>
                   </div>
@@ -456,10 +478,11 @@ export default function CheckoutPage() {
             {/* Area or District Selector */}
             {deliveryZone === 'inside_dhaka' ? (
               <div>
-                <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+                <label htmlFor="checkout-dhaka-area" className="block text-xs font-bold text-botanical-800 mb-1.5">
                   ঢাকা শহরের নির্দিষ্ট এলাকা নির্বাচন করুন *
                 </label>
                 <select
+                  id="checkout-dhaka-area"
                   value={dhakaArea}
                   onChange={(e) => setDhakaArea(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm bg-white"
@@ -473,18 +496,23 @@ export default function CheckoutPage() {
               </div>
             ) : (
               <div>
-                <label className="block text-xs font-bold text-botanical-800 mb-1.5">
-                  জেলা নির্বাচন করুন (৬৪ জেলা) *
+                <label htmlFor="checkout-district" className="block text-xs font-bold text-botanical-800 mb-1.5">
+                  বিভাগ অনুযায়ী জেলা নির্বাচন করুন (৬৪ জেলা) *
                 </label>
                 <select
+                  id="checkout-district"
                   value={selectedDistrict}
                   onChange={(e) => setSelectedDistrict(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm bg-white"
                 >
-                  {ALL_BANGLADESH_DISTRICTS.map((dist) => (
-                    <option key={dist} value={dist}>
-                      {dist} জেলা
-                    </option>
+                  {Object.entries(BANGLADESH_DISTRICTS_BY_DIVISION).map(([division, districts]) => (
+                    <optgroup key={division} label={`${division} বিভাগ`}>
+                      {districts.map((dist) => (
+                        <option key={dist} value={dist}>
+                          {dist} জেলা
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
               </div>
@@ -492,10 +520,11 @@ export default function CheckoutPage() {
 
             {/* Detailed Street Address */}
             <div>
-              <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+              <label htmlFor="checkout-address" className="block text-xs font-bold text-botanical-800 mb-1.5">
                 সম্পূর্ণ ঠিকানা (বাসা/ফ্ল্যাট নং, রোড নং, ল্যান্ডমার্ক) *
               </label>
               <textarea
+                id="checkout-address"
                 required
                 rows={2}
                 value={address1}
@@ -508,7 +537,7 @@ export default function CheckoutPage() {
                 className="w-full px-4 py-2.5 rounded-xl border border-warm-300 focus:outline-none focus:ring-2 focus:ring-botanical-600 text-sm"
               />
               {addressWarning && (
-                <p className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1.5 flex items-start gap-1.5">
+                <p className="text-xs text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 mt-1.5 flex items-start gap-1.5 font-medium">
                   <Info className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-amber-600" />
                   <span>{addressWarning}</span>
                 </p>
@@ -517,10 +546,11 @@ export default function CheckoutPage() {
 
             {/* Special Plant Delivery Notes */}
             <div>
-              <label className="block text-xs font-bold text-botanical-800 mb-1.5">
+              <label htmlFor="checkout-notes" className="block text-xs font-bold text-botanical-800 mb-1.5">
                 বিশেষ ডেলিভারি নোট (ঐচ্ছিক)
               </label>
               <input
+                id="checkout-notes"
                 type="text"
                 value={deliveryNotes}
                 onChange={(e) => setDeliveryNotes(e.target.value)}
@@ -552,12 +582,13 @@ export default function CheckoutPage() {
             </div>
 
             {/* Phone Confirmation Consent Checkbox */}
-            <label className="flex items-start gap-3 p-3.5 rounded-xl bg-warm-50 border border-warm-200 cursor-pointer text-xs text-botanical-900">
+            <label htmlFor="phone-consent" className="flex items-start gap-3 p-3.5 rounded-xl bg-warm-50 border border-warm-200 cursor-pointer text-xs text-botanical-900">
               <input
+                id="phone-consent"
                 type="checkbox"
                 checked={phoneConsent}
                 onChange={(e) => setPhoneConsent(e.target.checked)}
-                className="mt-0.5 rounded border-warm-300 text-botanical-700 focus:ring-botanical-600"
+                className="mt-0.5 rounded border-warm-300 text-botanical-700 focus:ring-botanical-600 w-4 h-4"
               />
               <span className="leading-relaxed">
                 আমি অবগত আছি যে লাইভ প্ল্যান্টের সুরক্ষার্থে ডেলিভারির পূর্বে নার্সারি থেকে আমাকে ফোনে কল করে ঠিকানা নিশ্চিত করা হবে এবং আমি ফোন রিসিভ করে অর্ডার কনফার্ম করব।
@@ -587,7 +618,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-bold text-xs text-botanical-950 truncate">{item.title}</h3>
-                    <p className="text-[11px] text-warm-500 truncate">
+                    <p className="text-xs text-warm-700 truncate">
                       {item.variant?.title || 'Standard'} × {item.quantity}
                     </p>
                   </div>
@@ -600,11 +631,11 @@ export default function CheckoutPage() {
 
             {/* Calculations */}
             <div className="space-y-2 border-t border-warm-100 pt-4 text-xs">
-              <div className="flex justify-between text-warm-600">
+              <div className="flex justify-between text-warm-700">
                 <span>উপমোট (Subtotal):</span>
                 <span className="font-semibold text-botanical-900 tabular-nums">{formatBDT(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-warm-600">
+              <div className="flex justify-between text-warm-700">
                 <span>
                   ডেলিভারি ফি ({deliveryZone === 'inside_dhaka' ? 'ঢাকা' : 'ঢাকার বাইরে'}):
                 </span>
@@ -615,6 +646,18 @@ export default function CheckoutPage() {
                 <span className="text-emerald-800 tabular-nums">{formatBDT(total)}</span>
               </div>
             </div>
+
+            {/* Direct Mobile/Bottom Error Alert */}
+            {(formError || phoneError) && (
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2 animate-in fade-in duration-200"
+              >
+                <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+                <span className="font-medium">{formError || phoneError}</span>
+              </div>
+            )}
 
             {/* Submit Button */}
             <button
@@ -640,7 +683,7 @@ export default function CheckoutPage() {
             </button>
 
             {/* Trust Assurances */}
-            <div className="pt-2 border-t border-warm-100 space-y-2 text-[11px] text-warm-500">
+            <div className="pt-2 border-t border-warm-100 space-y-2 text-xs text-warm-700">
               <div className="flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5 text-botanical-600 flex-shrink-0" />
                 <span>
@@ -656,7 +699,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Policy Links */}
-            <div className="text-[11px] text-warm-500 text-center space-x-3 pt-1">
+            <div className="text-xs text-warm-700 text-center space-x-3 pt-1">
               <Link href="/policies/shipping-and-delivery" className="text-botanical-700 hover:underline">
                 শিপিং পলিসি
               </Link>

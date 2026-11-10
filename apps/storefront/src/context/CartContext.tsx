@@ -158,7 +158,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return true
     } catch (err: any) {
       console.error('Add to cart error:', err)
-      alert(err.message || 'কার্টে যোগ করা সম্ভব হয়নি')
       return false
     } finally {
       setIsLoading(false)

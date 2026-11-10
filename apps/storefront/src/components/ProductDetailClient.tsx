@@ -27,7 +27,7 @@ import { useCart } from '@/context/CartContext'
 import { PlantCareAccordion } from '@/components/PlantCareAccordion'
 
 export function ProductDetailClient({ product }: { product: StoreProduct }) {
-  const { addToCart, isLoading } = useCart()
+  const { addToCart, isLoading, setIsDrawerOpen } = useCart()
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
     product.variants?.[0]?.id || ''
   )
@@ -59,6 +59,7 @@ export function ProductDetailClient({ product }: { product: StoreProduct }) {
     const success = await addToCart(selectedVariant.id, quantity)
     if (success) {
       setAdded(true)
+      setIsDrawerOpen(true)
       setTimeout(() => setAdded(false), 2500)
     }
   }
